@@ -12,9 +12,15 @@ const PRISMA_CI_STEP = `
 
 `;
 
+const DRIZZLE_CI_STEP = `
+      - name: Generate Drizzle migrations
+        run: bun run db:generate
+
+`;
+
 const CI_LINT_MARKER = `      - name: Lint`;
 
-async function patchCiForPrisma(targetDir: string): Promise<void> {
+async function patchCiForDb(targetDir: string, ciStep: string): Promise<void> {
   const ciPath = path.join(targetDir, ".github", "workflows", "ci.yml");
 
   if (!(await fs.pathExists(ciPath))) {
@@ -27,7 +33,7 @@ async function patchCiForPrisma(targetDir: string): Promise<void> {
     return;
   }
 
-  const patched = content.replace(CI_LINT_MARKER, `${PRISMA_CI_STEP}${CI_LINT_MARKER}`);
+  const patched = content.replace(CI_LINT_MARKER, `${ciStep}${CI_LINT_MARKER}`);
   await fs.writeFile(ciPath, patched);
 }
 
@@ -83,6 +89,7 @@ export async function create(opts: CreateOptions) {
   const supportedExtras = new Set([
     "better-auth",
     "clerk",
+    "drizzle",
     "email",
     "file-uploads",
     "github-workflows",
@@ -95,13 +102,19 @@ export async function create(opts: CreateOptions) {
   const unsupportedExtras = requestedExtras.filter((extra) => !supportedExtras.has(extra));
   if (unsupportedExtras.length > 0) {
     throw new Error(
-      `Unsupported template extras requested: ${unsupportedExtras.join(", ")}.\n\n${details}\n\nSupported extras: prisma, better-auth (requires prisma), clerk, github-workflows, vercel-deploy (requires github-workflows). All combinations are valid.`,
+      `Unsupported template extras requested: ${unsupportedExtras.join(", ")}.\n\n${details}\n\nSupported extras: prisma, drizzle, better-auth (requires prisma or drizzle), clerk, github-workflows, vercel-deploy (requires github-workflows). All combinations are valid.`,
     );
   }
 
-  if (requestedExtras.includes("better-auth") && !requestedExtras.includes("prisma")) {
+  if (requestedExtras.includes("prisma") && requestedExtras.includes("drizzle")) {
     throw new Error(
-      `The better-auth extra requires prisma.\n\n${details}`,
+      `Cannot use both prisma and drizzle. Choose one database adapter.\n\n${details}`,
+    );
+  }
+
+  if (requestedExtras.includes("better-auth") && !requestedExtras.includes("prisma") && !requestedExtras.includes("drizzle")) {
+    throw new Error(
+      `The better-auth extra requires a database adapter (prisma or drizzle).\n\n${details}`,
     );
   }
 
@@ -128,13 +141,19 @@ export async function create(opts: CreateOptions) {
 
   const scaffoldLabel = selectedExtras ? `nextjs/base + ${selectedExtras}` : "nextjs/base";
 
+  const hasPrisma = requestedExtras.includes("prisma");
+  const hasDrizzle = requestedExtras.includes("drizzle");
+
   consola.start(`Scaffolding ${scaffoldLabel} into ${targetDir}`);
   const excludeSubDirs: Record<string, string[]> = {};
+  if (requestedExtras.includes("better-auth")) {
+    excludeSubDirs["better-auth"] = hasDrizzle ? ["prisma", "drizzle"] : ["drizzle"];
+  }
   if (requestedExtras.includes("stripe")) {
-    excludeSubDirs.stripe = ["better-auth", "clerk"];
+    excludeSubDirs.stripe = ["better-auth", "better-auth-drizzle", "clerk"];
   }
   if (requestedExtras.includes("email")) {
-    excludeSubDirs.email = ["better-auth", "better-auth-stripe"];
+    excludeSubDirs.email = ["better-auth", "better-auth-stripe", "better-auth-drizzle", "better-auth-drizzle-stripe"];
   }
   if (requestedExtras.includes("forms")) {
     excludeSubDirs.forms = ["file-uploads"];
@@ -142,8 +161,16 @@ export async function create(opts: CreateOptions) {
   const excludeArg = Object.keys(excludeSubDirs).length > 0 ? excludeSubDirs : undefined;
   await scaffold("nextjs", targetDir, requestedExtras, excludeArg);
 
+  if (requestedExtras.includes("better-auth") && hasDrizzle) {
+    await applyExtraSubTemplate("nextjs", targetDir, "better-auth", "drizzle");
+  }
+
   if (requestedExtras.includes("stripe") && requestedExtras.includes("better-auth")) {
-    await applyExtraSubTemplate("nextjs", targetDir, "stripe", "better-auth");
+    if (hasDrizzle) {
+      await applyExtraSubTemplate("nextjs", targetDir, "stripe", "better-auth-drizzle");
+    } else {
+      await applyExtraSubTemplate("nextjs", targetDir, "stripe", "better-auth");
+    }
   } else if (requestedExtras.includes("stripe") && requestedExtras.includes("clerk")) {
     await applyExtraSubTemplate("nextjs", targetDir, "stripe", "clerk");
   }
@@ -153,15 +180,25 @@ export async function create(opts: CreateOptions) {
   }
 
   if (requestedExtras.includes("email") && requestedExtras.includes("better-auth") && requestedExtras.includes("stripe")) {
-    await applyExtraSubTemplate("nextjs", targetDir, "email", "better-auth-stripe");
+    if (hasDrizzle) {
+      await applyExtraSubTemplate("nextjs", targetDir, "email", "better-auth-drizzle-stripe");
+    } else {
+      await applyExtraSubTemplate("nextjs", targetDir, "email", "better-auth-stripe");
+    }
   } else if (requestedExtras.includes("email") && requestedExtras.includes("better-auth")) {
-    await applyExtraSubTemplate("nextjs", targetDir, "email", "better-auth");
+    if (hasDrizzle) {
+      await applyExtraSubTemplate("nextjs", targetDir, "email", "better-auth-drizzle");
+    } else {
+      await applyExtraSubTemplate("nextjs", targetDir, "email", "better-auth");
+    }
   }
 
   await updatePackageJson(targetDir, projectName, {});
 
-  if (requestedExtras.includes("prisma") && requestedExtras.includes("github-workflows")) {
-    await patchCiForPrisma(targetDir);
+  if (hasPrisma && requestedExtras.includes("github-workflows")) {
+    await patchCiForDb(targetDir, PRISMA_CI_STEP);
+  } else if (hasDrizzle && requestedExtras.includes("github-workflows")) {
+    await patchCiForDb(targetDir, DRIZZLE_CI_STEP);
   }
 
   if (opts.initGit) {
@@ -172,7 +209,6 @@ export async function create(opts: CreateOptions) {
     await installDeps(targetDir);
   }
 
-  const hasDb = requestedExtras.includes("prisma");
   const hasBetterAuth = requestedExtras.includes("better-auth");
   const hasClerk = requestedExtras.includes("clerk");
   const hasStripe = requestedExtras.includes("stripe");
@@ -190,12 +226,16 @@ export async function create(opts: CreateOptions) {
     nextSteps.push("# Set NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY and CLERK_SECRET_KEY in .env.schema");
   }
 
-  if (hasDb) {
+  if (hasPrisma) {
     nextSteps.push("# Set your DATABASE_URL in .env.schema");
     if (hasBetterAuth) {
       nextSteps.push("bun run auth:generate");
     }
     nextSteps.push("bun run db:migrate -- --name init");
+    nextSteps.push("bun run db:generate");
+  } else if (hasDrizzle) {
+    nextSteps.push("# Set your DATABASE_URL in .env.schema");
+    nextSteps.push("bun run db:push");
     nextSteps.push("bun run db:generate");
   }
 

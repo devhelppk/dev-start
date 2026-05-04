@@ -13,6 +13,7 @@ const AUTH_CLERK = "Clerk";
 const AUTH_NONE = "None";
 
 const DB_PRISMA = "Prisma + Postgres";
+const DB_DRIZZLE = "Drizzle + Postgres";
 
 interface InitSelection {
   options: CreateOptions;
@@ -32,6 +33,7 @@ function hasModuleFlags(args: Record<string, unknown>): boolean {
   return boolArg(args, "githubWorkflows")
     || boolArg(args, "vercelDeploy")
     || boolArg(args, "prisma")
+    || boolArg(args, "drizzle")
     || boolArg(args, "auth")
     || boolArg(args, "clerk")
     || boolArg(args, "stripe")
@@ -61,6 +63,10 @@ function applyFlagSelections(
 ): void {
   if (boolArg(args, "prisma")) {
     options.extras.db = DATABASE_ADAPTERS.prisma;
+  }
+
+  if (boolArg(args, "drizzle")) {
+    options.extras.db = DATABASE_ADAPTERS.drizzle;
   }
 
   if (boolArg(args, "auth")) {
@@ -126,10 +132,14 @@ async function selectAuthProvider(
 }
 
 async function selectDatabaseAdapter(): Promise<string> {
-  const answer = await promptSelect("Database adapter?", [DB_PRISMA], DB_PRISMA);
+  const answer = await promptSelect("Database adapter?", [DB_PRISMA, DB_DRIZZLE], DB_PRISMA);
 
   if (answer === DB_PRISMA) {
     return DATABASE_ADAPTERS.prisma;
+  }
+
+  if (answer === DB_DRIZZLE) {
+    return DATABASE_ADAPTERS.drizzle;
   }
 
   throw new Error(`Unsupported database adapter: ${answer}`);
@@ -220,20 +230,22 @@ async function askRelevantFlagFollowups(options: CreateOptions): Promise<boolean
 }
 
 function applyNonInteractiveDefaults(options: CreateOptions): void {
-  if (options.extras.auth === AUTH_PROVIDERS.betterAuth) {
+  if (options.extras.auth === AUTH_PROVIDERS.betterAuth && !options.extras.db) {
     options.extras.db = DATABASE_ADAPTERS.prisma;
   }
 
   if (options.extras.stripe && !options.extras.auth) {
     options.extras.auth = AUTH_PROVIDERS.betterAuth;
-    options.extras.db = DATABASE_ADAPTERS.prisma;
+    if (!options.extras.db) {
+      options.extras.db = DATABASE_ADAPTERS.prisma;
+    }
   }
 }
 
 function validateSelection(options: CreateOptions, args: Record<string, unknown>): void {
   if (boolArg(args, "base") && hasModuleFlagsWithoutBase(args)) {
     throw new Error(
-      "The --base flag cannot be combined with --prisma, --auth, --clerk, --stripe, --email, --file-uploads, --zustand, --forms, --github-workflows, or --vercel-deploy.",
+      "The --base flag cannot be combined with --prisma, --drizzle, --auth, --clerk, --stripe, --email, --file-uploads, --zustand, --forms, --github-workflows, or --vercel-deploy.",
     );
   }
 
@@ -243,8 +255,14 @@ function validateSelection(options: CreateOptions, args: Record<string, unknown>
     );
   }
 
+  if (boolArg(args, "prisma") && boolArg(args, "drizzle")) {
+    throw new Error(
+      "Cannot use both --prisma and --drizzle. Choose one database adapter.",
+    );
+  }
+
   if (options.extras.auth === AUTH_PROVIDERS.betterAuth && !options.extras.db) {
-    throw new Error("Better Auth requires Prisma.");
+    throw new Error("Better Auth requires a database adapter (--prisma or --drizzle).");
   }
 
   if (options.extras.stripe && !options.extras.auth) {
@@ -256,6 +274,7 @@ function hasModuleFlagsWithoutBase(args: Record<string, unknown>): boolean {
   return boolArg(args, "githubWorkflows")
     || boolArg(args, "vercelDeploy")
     || boolArg(args, "prisma")
+    || boolArg(args, "drizzle")
     || boolArg(args, "auth")
     || boolArg(args, "clerk")
     || boolArg(args, "stripe")

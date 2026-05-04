@@ -40,9 +40,14 @@ const initArgs = {
     description: "Include Prisma ORM",
     default: false,
   },
+  drizzle: {
+    type: "boolean" as const,
+    description: "Include Drizzle ORM (mutually exclusive with --prisma)",
+    default: false,
+  },
   auth: {
     type: "boolean" as const,
-    description: "Include authentication with Better Auth (requires --prisma)",
+    description: "Include authentication with Better Auth (requires --prisma or --drizzle)",
     default: false,
   },
   clerk: {

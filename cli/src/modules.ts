@@ -1,5 +1,6 @@
 export const MODULE_IDS = [
   "prisma",
+  "drizzle",
   "better-auth",
   "clerk",
   "stripe",
@@ -13,6 +14,7 @@ export const MODULE_IDS = [
 
 export const MODULE_LABELS: Record<string, string> = {
   prisma: "Prisma + Postgres",
+  drizzle: "Drizzle + Postgres",
   "better-auth": "Better Auth",
   clerk: "Clerk",
   stripe: "Stripe billing",
@@ -31,4 +33,5 @@ export const AUTH_PROVIDERS = {
 
 export const DATABASE_ADAPTERS = {
   prisma: "prisma",
+  drizzle: "drizzle",
 } satisfies Record<string, string>;

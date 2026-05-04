@@ -37,15 +37,15 @@ const shipped = [
       "JSON-driven form renderer with classic, conversational, and multistep view modes. Config-driven fields, auto-generated zod validation, and an overridable component map. Built on shadcn Form components.",
     status: "shipped",
   },
-] satisfies ReadonlyArray<RoadmapItem>
-
-const comingSoon = [
   {
     title: "Drizzle ORM",
     description:
       "Alternative to Prisma for teams that prefer a more SQL-like ORM. Same type-safe integration, different philosophy.",
-    status: "coming-soon",
+    status: "shipped",
   },
+] satisfies ReadonlyArray<RoadmapItem>
+
+const comingSoon = [
   {
     title: "Monorepo Templates",
     description:
