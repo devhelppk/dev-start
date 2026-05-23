@@ -29,7 +29,11 @@ yarn-error.log*
 pnpm-debug.log*
 
 # env files
-.env*.local
+# .env.schema and .env.{development,staging,production} ARE committed.
+# Local overrides (.env, .env.local, .env.<env>.local) are NOT.
+.env
+.env.local
+.env.*.local
 
 # typescript
 *.tsbuildinfo

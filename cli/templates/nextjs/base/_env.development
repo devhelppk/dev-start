@@ -1,0 +1,9 @@
+# Loaded when APP_ENV=development (the default).
+# This file IS committed — keep only non-sensitive defaults here.
+# Local overrides go in `.env.development.local` (gitignored).
+
+APP_ENV=development
+NODE_ENV=development
+
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+NEXT_PUBLIC_APP_NAME=Dev Start

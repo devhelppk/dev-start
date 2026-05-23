@@ -5,6 +5,13 @@ import { initGit } from "../helpers/git.js";
 import { installDeps } from "../helpers/install.js";
 import { updatePackageJson } from "../helpers/package-json.js";
 import { applyExtraSubTemplate, scaffold } from "../helpers/scaffold.js";
+import {
+  generateAuthClient,
+  generateAuthServer,
+  generateDrizzleSchema,
+  generatePrismaSchema,
+  loadFragments,
+} from "../codegen/index.js";
 
 const PRISMA_CI_STEP = `
       - name: Generate Prisma client
@@ -147,13 +154,10 @@ export async function create(opts: CreateOptions) {
   consola.start(`Scaffolding ${scaffoldLabel} into ${targetDir}`);
   const excludeSubDirs: Record<string, string[]> = {};
   if (requestedExtras.includes("better-auth")) {
-    excludeSubDirs["better-auth"] = hasDrizzle ? ["prisma", "drizzle"] : ["drizzle"];
+    excludeSubDirs["better-auth"] = ["prisma", "drizzle"];
   }
   if (requestedExtras.includes("stripe")) {
     excludeSubDirs.stripe = ["better-auth", "better-auth-drizzle", "clerk"];
-  }
-  if (requestedExtras.includes("email")) {
-    excludeSubDirs.email = ["better-auth", "better-auth-stripe", "better-auth-drizzle", "better-auth-drizzle-stripe"];
   }
   if (requestedExtras.includes("forms")) {
     excludeSubDirs.forms = ["file-uploads"];
@@ -161,15 +165,19 @@ export async function create(opts: CreateOptions) {
   const excludeArg = Object.keys(excludeSubDirs).length > 0 ? excludeSubDirs : undefined;
   await scaffold("nextjs", targetDir, requestedExtras, excludeArg);
 
-  if (requestedExtras.includes("better-auth") && hasDrizzle) {
-    await applyExtraSubTemplate("nextjs", targetDir, "better-auth", "drizzle");
+  if (requestedExtras.includes("better-auth")) {
+    if (hasPrisma) {
+      await applyExtraSubTemplate("nextjs", targetDir, "better-auth", "prisma");
+    }
+    if (hasDrizzle) {
+      await applyExtraSubTemplate("nextjs", targetDir, "better-auth", "drizzle");
+    }
   }
 
   if (requestedExtras.includes("stripe") && requestedExtras.includes("better-auth")) {
+    await applyExtraSubTemplate("nextjs", targetDir, "stripe", "better-auth");
     if (hasDrizzle) {
       await applyExtraSubTemplate("nextjs", targetDir, "stripe", "better-auth-drizzle");
-    } else {
-      await applyExtraSubTemplate("nextjs", targetDir, "stripe", "better-auth");
     }
   } else if (requestedExtras.includes("stripe") && requestedExtras.includes("clerk")) {
     await applyExtraSubTemplate("nextjs", targetDir, "stripe", "clerk");
@@ -179,17 +187,20 @@ export async function create(opts: CreateOptions) {
     await applyExtraSubTemplate("nextjs", targetDir, "forms", "file-uploads");
   }
 
-  if (requestedExtras.includes("email") && requestedExtras.includes("better-auth") && requestedExtras.includes("stripe")) {
-    if (hasDrizzle) {
-      await applyExtraSubTemplate("nextjs", targetDir, "email", "better-auth-drizzle-stripe");
-    } else {
-      await applyExtraSubTemplate("nextjs", targetDir, "email", "better-auth-stripe");
+  if (requestedExtras.includes("better-auth")) {
+    const adapter: "prisma" | "drizzle" = hasDrizzle ? "drizzle" : "prisma";
+    const fragments = loadFragments("nextjs", requestedExtras);
+    const authServer = generateAuthServer(fragments, { adapter, appName: "Dev-Start" });
+    const authClient = generateAuthClient(fragments);
+    await fs.outputFile(path.join(targetDir, "lib", "auth.ts"), authServer);
+    await fs.outputFile(path.join(targetDir, "lib", "auth-client.ts"), authClient);
+    if (hasPrisma) {
+      const prismaSchema = generatePrismaSchema(fragments);
+      await fs.outputFile(path.join(targetDir, "prisma", "schema.prisma"), prismaSchema);
     }
-  } else if (requestedExtras.includes("email") && requestedExtras.includes("better-auth")) {
     if (hasDrizzle) {
-      await applyExtraSubTemplate("nextjs", targetDir, "email", "better-auth-drizzle");
-    } else {
-      await applyExtraSubTemplate("nextjs", targetDir, "email", "better-auth");
+      const drizzleSchema = generateDrizzleSchema(fragments);
+      await fs.outputFile(path.join(targetDir, "db", "schema", "auth.ts"), drizzleSchema);
     }
   }
 

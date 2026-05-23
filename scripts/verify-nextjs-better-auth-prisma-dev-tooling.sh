@@ -44,14 +44,12 @@ assert_overlay_shape() {
   test -x "$app_dir/.husky/pre-commit"
   test ! -d "$app_dir/_husky"
   grep -q "\"name\": \"$expected_name\"" "$app_dir/package.json"
-  grep -q '"auth:generate"' "$app_dir/package.json"
   grep -q '"db:generate"' "$app_dir/package.json"
   grep -q '"db:migrate"' "$app_dir/package.json"
   grep -q '"prepare": "husky"' "$app_dir/package.json"
   grep -q '"precommit": "lint-staged"' "$app_dir/package.json"
   grep -q '"better-auth"' "$app_dir/package.json"
   grep -q '"@better-auth/prisma-adapter"' "$app_dir/package.json"
-  grep -q '"@better-auth/cli"' "$app_dir/package.json"
   grep -q 'BETTER_AUTH_SECRET=' "$app_dir/.env.schema"
   grep -q 'BETTER_AUTH_URL=' "$app_dir/.env.schema"
   grep -q 'model Session' "$app_dir/prisma/schema.prisma"
@@ -121,7 +119,6 @@ echo "Checking Husky install contract"
 echo "Running Better Auth + Prisma + dev-tooling generation contract"
 (
   cd "$BUILT_APP"
-  bun run auth:generate
   bun run db:generate
   test -f generated/prisma/client.ts
 )

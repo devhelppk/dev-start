@@ -63,6 +63,7 @@
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "husky": "^9.1.7",
+    "jsdom": "^25.0.1",
     "lint-staged": "^16.3.2",
     "oxfmt": "^0.46.0",
     "oxlint": "^1.61.0",

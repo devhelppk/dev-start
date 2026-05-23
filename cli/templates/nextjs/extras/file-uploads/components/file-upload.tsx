@@ -17,7 +17,7 @@ interface FileEntry {
   previewUrl: string | null
 }
 
-interface UploadResult {
+export interface UploadResult {
   file: File
   key: string
 }
@@ -26,7 +26,7 @@ interface FileUploadProps {
   multiple?: boolean
   accept?: string
   maxSizeMB?: number
-  onUploadComplete?: (results: UploadResult[]) => void
+  onUploadComplete?: (results: readonly UploadResult[]) => void
   onError?: (error: Error) => void
   className?: string
 }

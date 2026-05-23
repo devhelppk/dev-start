@@ -2,7 +2,7 @@
 
 import { PricingCard } from "@/components/pricing-card"
 import { Button } from "@/components/ui/button"
-import { upgradePlan, cancelPlan } from "@/app/billing/actions"
+import { upgradePlan, cancelPlan } from "@/app/dashboard/billing/actions"
 
 const PLANS = [
   {

@@ -1,0 +1,3 @@
+# --- Database (staging) ---
+# REPLACE BEFORE DEPLOY: staging Postgres connection string (set in platform env)
+DATABASE_URL=postgresql://user:password@staging-db.example.com:5432/dev_start?schema=public

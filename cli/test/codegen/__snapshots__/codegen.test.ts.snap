@@ -1,0 +1,1123 @@
+// Bun Snapshot v1, https://bun.sh/docs/test/snapshots
+
+exports[`auth codegen snapshots better-auth+prisma lib/auth.ts 1`] = `
+"import { betterAuth } from "better-auth"
+import { prismaAdapter } from "better-auth/adapters/prisma"
+
+import { prisma } from "@/lib/prisma"
+
+export const auth = betterAuth({
+  appName: "Dev-Start",
+  database: prismaAdapter(prisma, {
+    provider: "postgresql",
+  }),
+  emailAndPassword: {
+    enabled: true,
+    sendResetPassword: async ({ user, url }) => {
+      // TODO: Replace with a real email transport (Resend, Nodemailer, etc.)
+      // This console.log lets you test the flow locally — copy the URL from your terminal.
+      console.log(\`[auth] Password reset for \${user.email}: \${url}\`)
+    },
+  },
+  socialProviders: {
+    google: {
+      clientId: process.env.GOOGLE_CLIENT_ID ?? "",
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? "",
+      enabled: Boolean(process.env.GOOGLE_CLIENT_ID),
+    },
+  },
+})
+"
+`;
+
+exports[`auth codegen snapshots better-auth+prisma lib/auth-client.ts 1`] = `
+"import { createAuthClient } from "better-auth/react"
+
+export const authClient = createAuthClient()
+"
+`;
+
+exports[`auth codegen snapshots better-auth+prisma prisma/schema.prisma 1`] = `
+"generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id            String    @id
+  name          String
+  email         String
+  emailVerified Boolean   @default(false)
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  sessions      Session[]
+  accounts      Account[]
+
+  @@unique([email])
+  @@map("user")
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([token])
+  @@index([userId])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([userId])
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+  @@map("verification")
+}
+"
+`;
+
+exports[`auth codegen snapshots better-auth+drizzle lib/auth.ts 1`] = `
+"import { betterAuth } from "better-auth"
+import { drizzleAdapter } from "better-auth/adapters/drizzle"
+
+import { db } from "@/lib/db"
+import * as schema from "@/db/schema"
+
+export const auth = betterAuth({
+  appName: "Dev-Start",
+  database: drizzleAdapter(db, {
+    provider: "pg",
+    schema,
+  }),
+  emailAndPassword: {
+    enabled: true,
+    sendResetPassword: async ({ user, url }) => {
+      // TODO: Replace with a real email transport (Resend, Nodemailer, etc.)
+      // This console.log lets you test the flow locally — copy the URL from your terminal.
+      console.log(\`[auth] Password reset for \${user.email}: \${url}\`)
+    },
+  },
+  socialProviders: {
+    google: {
+      clientId: process.env.GOOGLE_CLIENT_ID ?? "",
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? "",
+      enabled: Boolean(process.env.GOOGLE_CLIENT_ID),
+    },
+  },
+})
+"
+`;
+
+exports[`auth codegen snapshots better-auth+drizzle lib/auth-client.ts 1`] = `
+"import { createAuthClient } from "better-auth/react"
+
+export const authClient = createAuthClient()
+"
+`;
+
+exports[`auth codegen snapshots better-auth+drizzle db/schema/auth.ts 1`] = `
+"import { pgTable, text, timestamp, boolean, index, uniqueIndex } from "drizzle-orm/pg-core"
+
+export const user = pgTable("user", {
+  id: text("id").primaryKey(),
+  name: text("name").notNull(),
+  email: text("email").notNull(),
+  emailVerified: boolean("email_verified").notNull().default(false),
+  image: text("image"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => [
+  uniqueIndex("user_email_idx").on(table.email),
+])
+
+export const session = pgTable("session", {
+  id: text("id").primaryKey(),
+  expiresAt: timestamp("expires_at").notNull(),
+  token: text("token").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  ipAddress: text("ip_address"),
+  userAgent: text("user_agent"),
+  userId: text("user_id").notNull().references(() => user.id, { onDelete: "cascade" }),
+}, (table) => [
+  uniqueIndex("session_token_idx").on(table.token),
+  index("session_user_id_idx").on(table.userId),
+])
+
+export const account = pgTable("account", {
+  id: text("id").primaryKey(),
+  accountId: text("account_id").notNull(),
+  providerId: text("provider_id").notNull(),
+  userId: text("user_id").notNull().references(() => user.id, { onDelete: "cascade" }),
+  accessToken: text("access_token"),
+  refreshToken: text("refresh_token"),
+  idToken: text("id_token"),
+  accessTokenExpiresAt: timestamp("access_token_expires_at"),
+  refreshTokenExpiresAt: timestamp("refresh_token_expires_at"),
+  scope: text("scope"),
+  password: text("password"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => [
+  index("account_user_id_idx").on(table.userId),
+])
+
+export const verification = pgTable("verification", {
+  id: text("id").primaryKey(),
+  identifier: text("identifier").notNull(),
+  value: text("value").notNull(),
+  expiresAt: timestamp("expires_at").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => [
+  index("verification_identifier_idx").on(table.identifier),
+])
+"
+`;
+
+exports[`auth codegen snapshots better-auth+prisma+email lib/auth.ts 1`] = `
+"import { betterAuth } from "better-auth"
+import { prismaAdapter } from "better-auth/adapters/prisma"
+
+import { prisma } from "@/lib/prisma"
+import { sendEmail } from "@/lib/email"
+import { PasswordResetEmail } from "@/emails/password-reset"
+import { VerificationEmail } from "@/emails/verification"
+
+export const auth = betterAuth({
+  appName: "Dev-Start",
+  database: prismaAdapter(prisma, {
+    provider: "postgresql",
+  }),
+  emailAndPassword: {
+    enabled: true,
+    sendResetPassword: async ({ user, url }) => {
+      void sendEmail({
+        to: user.email,
+        subject: "Reset your password",
+        template: PasswordResetEmail,
+        props: { url, userName: user.name ?? "there" },
+      })
+    },
+  },
+  emailVerification: {
+    sendOnSignUp: true,
+    sendVerificationEmail: async ({ user, url }) => {
+      void sendEmail({
+        to: user.email,
+        subject: "Verify your email address",
+        template: VerificationEmail,
+        props: { url, userName: user.name ?? "there" },
+      })
+    },
+  },
+  socialProviders: {
+    google: {
+      clientId: process.env.GOOGLE_CLIENT_ID ?? "",
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? "",
+      enabled: Boolean(process.env.GOOGLE_CLIENT_ID),
+    },
+  },
+})
+"
+`;
+
+exports[`auth codegen snapshots better-auth+prisma+email lib/auth-client.ts 1`] = `
+"import { createAuthClient } from "better-auth/react"
+
+export const authClient = createAuthClient()
+"
+`;
+
+exports[`auth codegen snapshots better-auth+prisma+email prisma/schema.prisma 1`] = `
+"generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id            String    @id
+  name          String
+  email         String
+  emailVerified Boolean   @default(false)
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  sessions      Session[]
+  accounts      Account[]
+
+  @@unique([email])
+  @@map("user")
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([token])
+  @@index([userId])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([userId])
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+  @@map("verification")
+}
+"
+`;
+
+exports[`auth codegen snapshots better-auth+drizzle+email lib/auth.ts 1`] = `
+"import { betterAuth } from "better-auth"
+import { drizzleAdapter } from "better-auth/adapters/drizzle"
+
+import { db } from "@/lib/db"
+import * as schema from "@/db/schema"
+import { sendEmail } from "@/lib/email"
+import { PasswordResetEmail } from "@/emails/password-reset"
+import { VerificationEmail } from "@/emails/verification"
+
+export const auth = betterAuth({
+  appName: "Dev-Start",
+  database: drizzleAdapter(db, {
+    provider: "pg",
+    schema,
+  }),
+  emailAndPassword: {
+    enabled: true,
+    sendResetPassword: async ({ user, url }) => {
+      void sendEmail({
+        to: user.email,
+        subject: "Reset your password",
+        template: PasswordResetEmail,
+        props: { url, userName: user.name ?? "there" },
+      })
+    },
+  },
+  emailVerification: {
+    sendOnSignUp: true,
+    sendVerificationEmail: async ({ user, url }) => {
+      void sendEmail({
+        to: user.email,
+        subject: "Verify your email address",
+        template: VerificationEmail,
+        props: { url, userName: user.name ?? "there" },
+      })
+    },
+  },
+  socialProviders: {
+    google: {
+      clientId: process.env.GOOGLE_CLIENT_ID ?? "",
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? "",
+      enabled: Boolean(process.env.GOOGLE_CLIENT_ID),
+    },
+  },
+})
+"
+`;
+
+exports[`auth codegen snapshots better-auth+drizzle+email lib/auth-client.ts 1`] = `
+"import { createAuthClient } from "better-auth/react"
+
+export const authClient = createAuthClient()
+"
+`;
+
+exports[`auth codegen snapshots better-auth+drizzle+email db/schema/auth.ts 1`] = `
+"import { pgTable, text, timestamp, boolean, index, uniqueIndex } from "drizzle-orm/pg-core"
+
+export const user = pgTable("user", {
+  id: text("id").primaryKey(),
+  name: text("name").notNull(),
+  email: text("email").notNull(),
+  emailVerified: boolean("email_verified").notNull().default(false),
+  image: text("image"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => [
+  uniqueIndex("user_email_idx").on(table.email),
+])
+
+export const session = pgTable("session", {
+  id: text("id").primaryKey(),
+  expiresAt: timestamp("expires_at").notNull(),
+  token: text("token").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  ipAddress: text("ip_address"),
+  userAgent: text("user_agent"),
+  userId: text("user_id").notNull().references(() => user.id, { onDelete: "cascade" }),
+}, (table) => [
+  uniqueIndex("session_token_idx").on(table.token),
+  index("session_user_id_idx").on(table.userId),
+])
+
+export const account = pgTable("account", {
+  id: text("id").primaryKey(),
+  accountId: text("account_id").notNull(),
+  providerId: text("provider_id").notNull(),
+  userId: text("user_id").notNull().references(() => user.id, { onDelete: "cascade" }),
+  accessToken: text("access_token"),
+  refreshToken: text("refresh_token"),
+  idToken: text("id_token"),
+  accessTokenExpiresAt: timestamp("access_token_expires_at"),
+  refreshTokenExpiresAt: timestamp("refresh_token_expires_at"),
+  scope: text("scope"),
+  password: text("password"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => [
+  index("account_user_id_idx").on(table.userId),
+])
+
+export const verification = pgTable("verification", {
+  id: text("id").primaryKey(),
+  identifier: text("identifier").notNull(),
+  value: text("value").notNull(),
+  expiresAt: timestamp("expires_at").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => [
+  index("verification_identifier_idx").on(table.identifier),
+])
+"
+`;
+
+exports[`auth codegen snapshots better-auth+prisma+stripe lib/auth.ts 1`] = `
+"import { betterAuth } from "better-auth"
+import { prismaAdapter } from "better-auth/adapters/prisma"
+import { stripe } from "@better-auth/stripe"
+import Stripe from "stripe"
+
+import { prisma } from "@/lib/prisma"
+
+const stripeClient = new Stripe(process.env.STRIPE_SECRET_KEY ?? "")
+
+export const auth = betterAuth({
+  appName: "Dev-Start",
+  database: prismaAdapter(prisma, {
+    provider: "postgresql",
+  }),
+  emailAndPassword: {
+    enabled: true,
+    sendResetPassword: async ({ user, url }) => {
+      // TODO: Replace with a real email transport (Resend, Nodemailer, etc.)
+      // This console.log lets you test the flow locally — copy the URL from your terminal.
+      console.log(\`[auth] Password reset for \${user.email}: \${url}\`)
+    },
+  },
+  socialProviders: {
+    google: {
+      clientId: process.env.GOOGLE_CLIENT_ID ?? "",
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? "",
+      enabled: Boolean(process.env.GOOGLE_CLIENT_ID),
+    },
+  },
+  plugins: [
+    stripe({
+      stripeClient,
+      stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET ?? "",
+      createCustomerOnSignUp: true,
+      subscription: {
+        enabled: true,
+        plans: [
+          {
+            name: "free",
+            priceId: "price_free_placeholder",
+            limits: { projects: 3 },
+          },
+          {
+            name: "pro",
+            priceId: "price_pro_placeholder",
+            limits: { projects: 25 },
+          },
+          {
+            name: "enterprise",
+            priceId: "price_enterprise_placeholder",
+            limits: { projects: 100 },
+          },
+        ],
+      },
+    }),
+  ],
+})
+"
+`;
+
+exports[`auth codegen snapshots better-auth+prisma+stripe lib/auth-client.ts 1`] = `
+"import { createAuthClient } from "better-auth/react"
+
+export const authClient = createAuthClient()
+"
+`;
+
+exports[`auth codegen snapshots better-auth+prisma+stripe prisma/schema.prisma 1`] = `
+"generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id            String         @id
+  name          String
+  email         String
+  emailVerified Boolean        @default(false)
+  image         String?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  sessions      Session[]
+  accounts      Account[]
+  subscriptions Subscription[]
+
+  @@unique([email])
+  @@map("user")
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([token])
+  @@index([userId])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([userId])
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+  @@map("verification")
+}
+
+model Subscription {
+  id                   String    @id
+  plan                 String
+  referenceId          String
+  stripeCustomerId     String?
+  stripeSubscriptionId String?
+  status               String
+  periodStart          DateTime?
+  periodEnd            DateTime?
+  cancelAtPeriodEnd    Boolean   @default(false)
+  seats                Int?
+  trialStart           DateTime?
+  trialEnd             DateTime?
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+  user                 User      @relation(fields: [referenceId], references: [id], onDelete: Cascade)
+
+  @@index([referenceId])
+  @@index([stripeCustomerId])
+  @@map("subscription")
+}
+"
+`;
+
+exports[`auth codegen snapshots better-auth+drizzle+stripe lib/auth.ts 1`] = `
+"import { betterAuth } from "better-auth"
+import { drizzleAdapter } from "better-auth/adapters/drizzle"
+import { stripe } from "@better-auth/stripe"
+import Stripe from "stripe"
+
+import { db } from "@/lib/db"
+import * as schema from "@/db/schema"
+
+const stripeClient = new Stripe(process.env.STRIPE_SECRET_KEY ?? "")
+
+export const auth = betterAuth({
+  appName: "Dev-Start",
+  database: drizzleAdapter(db, {
+    provider: "pg",
+    schema,
+  }),
+  emailAndPassword: {
+    enabled: true,
+    sendResetPassword: async ({ user, url }) => {
+      // TODO: Replace with a real email transport (Resend, Nodemailer, etc.)
+      // This console.log lets you test the flow locally — copy the URL from your terminal.
+      console.log(\`[auth] Password reset for \${user.email}: \${url}\`)
+    },
+  },
+  socialProviders: {
+    google: {
+      clientId: process.env.GOOGLE_CLIENT_ID ?? "",
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? "",
+      enabled: Boolean(process.env.GOOGLE_CLIENT_ID),
+    },
+  },
+  plugins: [
+    stripe({
+      stripeClient,
+      stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET ?? "",
+      createCustomerOnSignUp: true,
+      subscription: {
+        enabled: true,
+        plans: [
+          {
+            name: "free",
+            priceId: "price_free_placeholder",
+            limits: { projects: 3 },
+          },
+          {
+            name: "pro",
+            priceId: "price_pro_placeholder",
+            limits: { projects: 25 },
+          },
+          {
+            name: "enterprise",
+            priceId: "price_enterprise_placeholder",
+            limits: { projects: 100 },
+          },
+        ],
+      },
+    }),
+  ],
+})
+"
+`;
+
+exports[`auth codegen snapshots better-auth+drizzle+stripe lib/auth-client.ts 1`] = `
+"import { createAuthClient } from "better-auth/react"
+
+export const authClient = createAuthClient()
+"
+`;
+
+exports[`auth codegen snapshots better-auth+drizzle+stripe db/schema/auth.ts 1`] = `
+"import { pgTable, text, timestamp, boolean, index, uniqueIndex, integer } from "drizzle-orm/pg-core"
+
+export const user = pgTable("user", {
+  id: text("id").primaryKey(),
+  name: text("name").notNull(),
+  email: text("email").notNull(),
+  emailVerified: boolean("email_verified").notNull().default(false),
+  image: text("image"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => [
+  uniqueIndex("user_email_idx").on(table.email),
+])
+
+export const session = pgTable("session", {
+  id: text("id").primaryKey(),
+  expiresAt: timestamp("expires_at").notNull(),
+  token: text("token").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  ipAddress: text("ip_address"),
+  userAgent: text("user_agent"),
+  userId: text("user_id").notNull().references(() => user.id, { onDelete: "cascade" }),
+}, (table) => [
+  uniqueIndex("session_token_idx").on(table.token),
+  index("session_user_id_idx").on(table.userId),
+])
+
+export const account = pgTable("account", {
+  id: text("id").primaryKey(),
+  accountId: text("account_id").notNull(),
+  providerId: text("provider_id").notNull(),
+  userId: text("user_id").notNull().references(() => user.id, { onDelete: "cascade" }),
+  accessToken: text("access_token"),
+  refreshToken: text("refresh_token"),
+  idToken: text("id_token"),
+  accessTokenExpiresAt: timestamp("access_token_expires_at"),
+  refreshTokenExpiresAt: timestamp("refresh_token_expires_at"),
+  scope: text("scope"),
+  password: text("password"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => [
+  index("account_user_id_idx").on(table.userId),
+])
+
+export const verification = pgTable("verification", {
+  id: text("id").primaryKey(),
+  identifier: text("identifier").notNull(),
+  value: text("value").notNull(),
+  expiresAt: timestamp("expires_at").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => [
+  index("verification_identifier_idx").on(table.identifier),
+])
+
+export const subscription = pgTable("subscription", {
+  id: text("id").primaryKey(),
+  plan: text("plan").notNull(),
+  referenceId: text("reference_id").notNull().references(() => user.id, { onDelete: "cascade" }),
+  stripeCustomerId: text("stripe_customer_id"),
+  stripeSubscriptionId: text("stripe_subscription_id"),
+  status: text("status").notNull(),
+  periodStart: timestamp("period_start"),
+  periodEnd: timestamp("period_end"),
+  cancelAtPeriodEnd: boolean("cancel_at_period_end").notNull().default(false),
+  seats: integer("seats"),
+  trialStart: timestamp("trial_start"),
+  trialEnd: timestamp("trial_end"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => [
+  index("subscription_reference_id_idx").on(table.referenceId),
+  index("subscription_stripe_customer_id_idx").on(table.stripeCustomerId),
+])
+"
+`;
+
+exports[`auth codegen snapshots better-auth+prisma+email+stripe lib/auth.ts 1`] = `
+"import { betterAuth } from "better-auth"
+import { prismaAdapter } from "better-auth/adapters/prisma"
+import { stripe } from "@better-auth/stripe"
+import Stripe from "stripe"
+
+import { prisma } from "@/lib/prisma"
+import { sendEmail } from "@/lib/email"
+import { PasswordResetEmail } from "@/emails/password-reset"
+import { VerificationEmail } from "@/emails/verification"
+
+const stripeClient = new Stripe(process.env.STRIPE_SECRET_KEY ?? "")
+
+export const auth = betterAuth({
+  appName: "Dev-Start",
+  database: prismaAdapter(prisma, {
+    provider: "postgresql",
+  }),
+  emailAndPassword: {
+    enabled: true,
+    sendResetPassword: async ({ user, url }) => {
+      void sendEmail({
+        to: user.email,
+        subject: "Reset your password",
+        template: PasswordResetEmail,
+        props: { url, userName: user.name ?? "there" },
+      })
+    },
+  },
+  emailVerification: {
+    sendOnSignUp: true,
+    sendVerificationEmail: async ({ user, url }) => {
+      void sendEmail({
+        to: user.email,
+        subject: "Verify your email address",
+        template: VerificationEmail,
+        props: { url, userName: user.name ?? "there" },
+      })
+    },
+  },
+  socialProviders: {
+    google: {
+      clientId: process.env.GOOGLE_CLIENT_ID ?? "",
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? "",
+      enabled: Boolean(process.env.GOOGLE_CLIENT_ID),
+    },
+  },
+  plugins: [
+    stripe({
+      stripeClient,
+      stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET ?? "",
+      createCustomerOnSignUp: true,
+      subscription: {
+        enabled: true,
+        plans: [
+          {
+            name: "free",
+            priceId: "price_free_placeholder",
+            limits: { projects: 3 },
+          },
+          {
+            name: "pro",
+            priceId: "price_pro_placeholder",
+            limits: { projects: 25 },
+          },
+          {
+            name: "enterprise",
+            priceId: "price_enterprise_placeholder",
+            limits: { projects: 100 },
+          },
+        ],
+      },
+    }),
+  ],
+})
+"
+`;
+
+exports[`auth codegen snapshots better-auth+prisma+email+stripe lib/auth-client.ts 1`] = `
+"import { createAuthClient } from "better-auth/react"
+
+export const authClient = createAuthClient()
+"
+`;
+
+exports[`auth codegen snapshots better-auth+prisma+email+stripe prisma/schema.prisma 1`] = `
+"generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id            String         @id
+  name          String
+  email         String
+  emailVerified Boolean        @default(false)
+  image         String?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  sessions      Session[]
+  accounts      Account[]
+  subscriptions Subscription[]
+
+  @@unique([email])
+  @@map("user")
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([token])
+  @@index([userId])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([userId])
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+  @@map("verification")
+}
+
+model Subscription {
+  id                   String    @id
+  plan                 String
+  referenceId          String
+  stripeCustomerId     String?
+  stripeSubscriptionId String?
+  status               String
+  periodStart          DateTime?
+  periodEnd            DateTime?
+  cancelAtPeriodEnd    Boolean   @default(false)
+  seats                Int?
+  trialStart           DateTime?
+  trialEnd             DateTime?
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+  user                 User      @relation(fields: [referenceId], references: [id], onDelete: Cascade)
+
+  @@index([referenceId])
+  @@index([stripeCustomerId])
+  @@map("subscription")
+}
+"
+`;
+
+exports[`auth codegen snapshots better-auth+drizzle+email+stripe lib/auth.ts 1`] = `
+"import { betterAuth } from "better-auth"
+import { drizzleAdapter } from "better-auth/adapters/drizzle"
+import { stripe } from "@better-auth/stripe"
+import Stripe from "stripe"
+
+import { db } from "@/lib/db"
+import * as schema from "@/db/schema"
+import { sendEmail } from "@/lib/email"
+import { PasswordResetEmail } from "@/emails/password-reset"
+import { VerificationEmail } from "@/emails/verification"
+
+const stripeClient = new Stripe(process.env.STRIPE_SECRET_KEY ?? "")
+
+export const auth = betterAuth({
+  appName: "Dev-Start",
+  database: drizzleAdapter(db, {
+    provider: "pg",
+    schema,
+  }),
+  emailAndPassword: {
+    enabled: true,
+    sendResetPassword: async ({ user, url }) => {
+      void sendEmail({
+        to: user.email,
+        subject: "Reset your password",
+        template: PasswordResetEmail,
+        props: { url, userName: user.name ?? "there" },
+      })
+    },
+  },
+  emailVerification: {
+    sendOnSignUp: true,
+    sendVerificationEmail: async ({ user, url }) => {
+      void sendEmail({
+        to: user.email,
+        subject: "Verify your email address",
+        template: VerificationEmail,
+        props: { url, userName: user.name ?? "there" },
+      })
+    },
+  },
+  socialProviders: {
+    google: {
+      clientId: process.env.GOOGLE_CLIENT_ID ?? "",
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? "",
+      enabled: Boolean(process.env.GOOGLE_CLIENT_ID),
+    },
+  },
+  plugins: [
+    stripe({
+      stripeClient,
+      stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET ?? "",
+      createCustomerOnSignUp: true,
+      subscription: {
+        enabled: true,
+        plans: [
+          {
+            name: "free",
+            priceId: "price_free_placeholder",
+            limits: { projects: 3 },
+          },
+          {
+            name: "pro",
+            priceId: "price_pro_placeholder",
+            limits: { projects: 25 },
+          },
+          {
+            name: "enterprise",
+            priceId: "price_enterprise_placeholder",
+            limits: { projects: 100 },
+          },
+        ],
+      },
+    }),
+  ],
+})
+"
+`;
+
+exports[`auth codegen snapshots better-auth+drizzle+email+stripe lib/auth-client.ts 1`] = `
+"import { createAuthClient } from "better-auth/react"
+
+export const authClient = createAuthClient()
+"
+`;
+
+exports[`auth codegen snapshots better-auth+drizzle+email+stripe db/schema/auth.ts 1`] = `
+"import { pgTable, text, timestamp, boolean, index, uniqueIndex, integer } from "drizzle-orm/pg-core"
+
+export const user = pgTable("user", {
+  id: text("id").primaryKey(),
+  name: text("name").notNull(),
+  email: text("email").notNull(),
+  emailVerified: boolean("email_verified").notNull().default(false),
+  image: text("image"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => [
+  uniqueIndex("user_email_idx").on(table.email),
+])
+
+export const session = pgTable("session", {
+  id: text("id").primaryKey(),
+  expiresAt: timestamp("expires_at").notNull(),
+  token: text("token").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  ipAddress: text("ip_address"),
+  userAgent: text("user_agent"),
+  userId: text("user_id").notNull().references(() => user.id, { onDelete: "cascade" }),
+}, (table) => [
+  uniqueIndex("session_token_idx").on(table.token),
+  index("session_user_id_idx").on(table.userId),
+])
+
+export const account = pgTable("account", {
+  id: text("id").primaryKey(),
+  accountId: text("account_id").notNull(),
+  providerId: text("provider_id").notNull(),
+  userId: text("user_id").notNull().references(() => user.id, { onDelete: "cascade" }),
+  accessToken: text("access_token"),
+  refreshToken: text("refresh_token"),
+  idToken: text("id_token"),
+  accessTokenExpiresAt: timestamp("access_token_expires_at"),
+  refreshTokenExpiresAt: timestamp("refresh_token_expires_at"),
+  scope: text("scope"),
+  password: text("password"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => [
+  index("account_user_id_idx").on(table.userId),
+])
+
+export const verification = pgTable("verification", {
+  id: text("id").primaryKey(),
+  identifier: text("identifier").notNull(),
+  value: text("value").notNull(),
+  expiresAt: timestamp("expires_at").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => [
+  index("verification_identifier_idx").on(table.identifier),
+])
+
+export const subscription = pgTable("subscription", {
+  id: text("id").primaryKey(),
+  plan: text("plan").notNull(),
+  referenceId: text("reference_id").notNull().references(() => user.id, { onDelete: "cascade" }),
+  stripeCustomerId: text("stripe_customer_id"),
+  stripeSubscriptionId: text("stripe_subscription_id"),
+  status: text("status").notNull(),
+  periodStart: timestamp("period_start"),
+  periodEnd: timestamp("period_end"),
+  cancelAtPeriodEnd: boolean("cancel_at_period_end").notNull().default(false),
+  seats: integer("seats"),
+  trialStart: timestamp("trial_start"),
+  trialEnd: timestamp("trial_end"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => [
+  index("subscription_reference_id_idx").on(table.referenceId),
+  index("subscription_stripe_customer_id_idx").on(table.stripeCustomerId),
+])
+"
+`;

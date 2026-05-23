@@ -17,6 +17,9 @@ export const DOTFILE_RENAMES: Record<string, string> = {
   _gitkeep: ".gitkeep",
   _husky: ".husky",
   "_env.schema": ".env.schema",
+  "_env.development": ".env.development",
+  "_env.staging": ".env.staging",
+  "_env.production": ".env.production",
   "_oxlintrc.json": ".oxlintrc.json",
   "_oxfmtrc.json": ".oxfmtrc.json",
 };
@@ -215,33 +218,40 @@ async function mergeGitignore(sourceDir: string, targetDir: string): Promise<voi
   await fs.writeFile(targetPath, `${mergedLines.join("\n").replace(/\n+$/u, "")}\n`);
 }
 
-async function mergeEnvSchema(sourceDir: string, targetDir: string): Promise<void> {
-  const sourcePath = path.join(sourceDir, "_env.schema");
+function appendEnvFile(underscoreName: string): MergeHandler {
+  const dotName = DOTFILE_RENAMES[underscoreName] ?? underscoreName;
 
-  if (!(await fs.pathExists(sourcePath))) {
-    return;
-  }
+  return async function mergeEnvFile(sourceDir: string, targetDir: string): Promise<void> {
+    const sourcePath = path.join(sourceDir, underscoreName);
 
-  // After restoreDotEntries, _env.schema becomes .env.schema in the target.
-  // Check both names to support sub-template application after dotfile renames.
-  const underscorePath = path.join(targetDir, "_env.schema");
-  const dotPath = path.join(targetDir, ".env.schema");
-  const targetPath = (await fs.pathExists(underscorePath)) ? underscorePath : dotPath;
+    if (!(await fs.pathExists(sourcePath))) {
+      return;
+    }
 
-  if (!(await fs.pathExists(targetPath))) {
-    await fs.copy(sourcePath, targetPath, { overwrite: false });
-    return;
-  }
+    // After restoreDotEntries, the underscore form has been renamed in the target.
+    // Check both names to support sub-template application after dotfile renames.
+    const underscorePath = path.join(targetDir, underscoreName);
+    const dotPath = path.join(targetDir, dotName);
+    const targetPath = (await fs.pathExists(underscorePath)) ? underscorePath : dotPath;
 
-  const targetContent = (await fs.readFile(targetPath, "utf8")).trimEnd();
-  const sourceContent = (await fs.readFile(sourcePath, "utf8")).trimEnd();
+    if (!(await fs.pathExists(targetPath))) {
+      await fs.copy(sourcePath, targetPath, { overwrite: false });
+      return;
+    }
 
-  await fs.writeFile(targetPath, `${targetContent}\n\n${sourceContent}\n`);
+    const targetContent = (await fs.readFile(targetPath, "utf8")).trimEnd();
+    const sourceContent = (await fs.readFile(sourcePath, "utf8")).trimEnd();
+
+    await fs.writeFile(targetPath, `${targetContent}\n\n${sourceContent}\n`);
+  };
 }
 
 export const MERGE_HANDLERS: Record<string, MergeHandler> = {
   _gitignore: mergeGitignore,
-  "_env.schema": mergeEnvSchema,
+  "_env.schema": appendEnvFile("_env.schema"),
+  "_env.development": appendEnvFile("_env.development"),
+  "_env.staging": appendEnvFile("_env.staging"),
+  "_env.production": appendEnvFile("_env.production"),
   "CLAUDE.md": mergeClaudeMd,
   "README.md": mergeReadme,
   "package.json": mergePackageJson,

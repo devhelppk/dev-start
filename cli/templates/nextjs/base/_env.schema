@@ -1,13 +1,22 @@
 # @generateTypes(lang=ts, path=env.d.ts)
 # @defaultSensitive=inferFromPrefix('NEXT_PUBLIC_')
-# @currentEnv=$NODE_ENV
+# @currentEnv=$APP_ENV
 # ---
 
 # --- App Configuration ---
 
+# @type=enum(development, staging, production, test)
+# @sensitive=false
+# @optional
+# Selects which .env.<APP_ENV> file varlock loads. Decoupled from NODE_ENV so
+# `NODE_ENV=production` at build time can coexist with `APP_ENV=staging`.
+APP_ENV=development
+
 # @type=enum(development, production, test)
 # @sensitive=false
 # @optional
+# Node.js runtime mode. Used by Next.js / React for optimizations. Does NOT
+# select env files — use APP_ENV for that.
 NODE_ENV=development
 
 # @type=number(min=1, max=65535)

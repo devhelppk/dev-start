@@ -3,5 +3,7 @@
 # @required @sensitive
 # @type=url
 # @docs(https://www.prisma.io/docs/orm/overview/databases/postgresql)
-# PostgreSQL connection string
-DATABASE_URL=postgresql://postgres:postgres@localhost:5432/dev_start?schema=public
+# PostgreSQL connection string. Default targets the docker-compose service on
+# port 5449 (see docker-compose.yml). Override in `.env.<env>.local` for any
+# alternate local Postgres instance.
+DATABASE_URL=postgresql://postgres:postgres@localhost:5449/dev_start?schema=public

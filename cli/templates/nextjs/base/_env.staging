@@ -1,0 +1,10 @@
+# Loaded when APP_ENV=staging.
+# This file IS committed. Use placeholders for any @sensitive value.
+# Real secrets belong in the platform env (Vercel / Render / etc.).
+
+APP_ENV=staging
+NODE_ENV=production
+
+# REPLACE BEFORE DEPLOY: staging public URL
+NEXT_PUBLIC_APP_URL=https://staging.example.com
+NEXT_PUBLIC_APP_NAME=Dev Start (staging)

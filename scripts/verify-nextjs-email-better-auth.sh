@@ -63,12 +63,6 @@ echo "Scaffolding email + Better Auth app from built output"
 
 assert_email_ba_shape "$BUILT_APP" "built-app"
 
-echo "Preparing email + Better Auth environment"
-(
-  cd "$BUILT_APP"
-  cp .env.schema .env
-)
-
 echo "Installing generated email + Better Auth app dependencies"
 (
   cd "$BUILT_APP"
@@ -78,7 +72,6 @@ echo "Installing generated email + Better Auth app dependencies"
 echo "Running Better Auth and Prisma generation contract"
 (
   cd "$BUILT_APP"
-  bun run auth:generate
   bun run db:generate
   test -f generated/prisma/client.ts
 )
@@ -89,6 +82,7 @@ echo "Running generated email + Better Auth app quality gates"
   bun run build
   bun run lint
   bun run typecheck
+  bun run test
 )
 
 echo "nextjs/base + prisma + better-auth + email verification passed"

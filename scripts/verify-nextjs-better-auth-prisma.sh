@@ -40,12 +40,10 @@ assert_overlay_shape() {
   test -f "$app_dir/prisma/schema.prisma"
   test -f "$app_dir/prisma.config.ts"
   grep -q "\"name\": \"$expected_name\"" "$app_dir/package.json"
-  grep -q '"auth:generate"' "$app_dir/package.json"
   grep -q '"db:generate"' "$app_dir/package.json"
   grep -q '"db:migrate"' "$app_dir/package.json"
   grep -q '"better-auth"' "$app_dir/package.json"
   grep -q '"@better-auth/prisma-adapter"' "$app_dir/package.json"
-  grep -q '"@better-auth/cli"' "$app_dir/package.json"
   grep -q 'BETTER_AUTH_SECRET=' "$app_dir/.env.schema"
   grep -q 'BETTER_AUTH_URL=' "$app_dir/.env.schema"
   grep -q 'model Session' "$app_dir/prisma/schema.prisma"
@@ -91,12 +89,6 @@ echo "Scaffolding Better Auth + Prisma app from built output"
 
 assert_overlay_shape "$BUILT_APP" "built-app"
 
-echo "Preparing Better Auth + Prisma environment"
-(
-  cd "$BUILT_APP"
-  cp .env.schema .env
-)
-
 echo "Installing generated Better Auth + Prisma app dependencies"
 (
   cd "$BUILT_APP"
@@ -106,7 +98,6 @@ echo "Installing generated Better Auth + Prisma app dependencies"
 echo "Running Better Auth and Prisma generation contract"
 (
   cd "$BUILT_APP"
-  bun run auth:generate
   bun run db:generate
   test -f generated/prisma/client.ts
 )
@@ -117,6 +108,7 @@ echo "Running generated Better Auth + Prisma app quality gates"
   bun run build
   bun run lint
   bun run typecheck
+  bun run test
 )
 
 echo "Checking generated Better Auth + Prisma auth route"

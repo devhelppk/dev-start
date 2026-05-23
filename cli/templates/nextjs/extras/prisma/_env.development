@@ -1,0 +1,3 @@
+# --- Database (development) ---
+# Matches docker-compose.yml — `bun run db:up` brings this Postgres up.
+DATABASE_URL=postgresql://postgres:postgres@localhost:5449/dev_start?schema=public

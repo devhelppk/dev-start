@@ -1,6 +1,6 @@
 "use client";
 
-import { FileUpload } from "@/components/file-upload";
+import { FileUpload, type UploadResult } from "@/components/file-upload";
 import {
   Field,
   FieldDescription,
@@ -29,7 +29,10 @@ function FileField({
       <FileUpload
         accept={accept}
         maxSizeMB={maxSizeMB}
-        onUploadComplete={(url: string) => field.onChange(url)}
+        onUploadComplete={(results: readonly UploadResult[]) => {
+          const first = results[0];
+          field.onChange(first ? first.key : "");
+        }}
       />
       {field.value ? (
         <p className="text-sm text-muted-foreground">

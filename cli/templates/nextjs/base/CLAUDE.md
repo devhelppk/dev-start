@@ -51,6 +51,30 @@ This project uses [varlock](https://varlock.dev) for schema-driven env validatio
 - Run `bun run env:check` to validate your environment locally.
 - Run `bun run env:scan` to check for accidentally leaked secrets in the codebase.
 
+### Env file matrix
+
+| File | Committed? | Purpose |
+|---|---|---|
+| `.env.schema` | ✅ | Authoritative schema + decorators |
+| `.env.development` | ✅ | Non-sensitive defaults that let `bun run dev` work out of the box |
+| `.env.staging` | ✅ | Placeholder URLs/keys with `# REPLACE BEFORE DEPLOY:` markers |
+| `.env.production` | ✅ | Same — production placeholders, real secrets live in the platform |
+| `.env` / `.env.local` | ❌ | Top-level local overrides (gitignored) |
+| `.env.{development,staging,production}.local` | ❌ | Per-env local overrides (gitignored) |
+
+`APP_ENV` selects which file varlock loads (`@currentEnv=$APP_ENV` in the schema). Defaults to `development`. Decouple this from `NODE_ENV` — `NODE_ENV=production` at build time can coexist with `APP_ENV=staging`.
+
+### Universal `varlock run --` wrapping
+
+Any CLI that reads `process.env` directly **must** be wrapped with `varlock run --` so it sees the validated environment. The shipped scripts already wrap:
+
+- `prisma` (every `db:*` script)
+- `@better-auth/cli` (when/if invoked — note: ds-start does not ship this script; schema is codegen-owned)
+- `stripe listen`
+- `shadcn` (when adding components — `shadcn` invokes the Next.js config which trips varlock if env isn't loaded)
+
+When adding a new CLI invocation to `package.json`, default to wrapping with `varlock run --` unless the tool reads env via varlock itself.
+
 ### Adding a new env var
 ```
 # @required @sensitive

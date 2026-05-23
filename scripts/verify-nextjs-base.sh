@@ -30,7 +30,14 @@ assert_scaffold_shape() {
   test ! -f "$app_dir/_gitignore"
   test ! -f "$app_dir/_oxlintrc.json"
   test ! -f "$app_dir/_oxfmtrc.json"
+  test -f "$app_dir/.env.schema"
+  test -f "$app_dir/.env.development"
+  test -f "$app_dir/.env.staging"
+  test -f "$app_dir/.env.production"
+  test ! -f "$app_dir/_env.development"
+  grep -q '@currentEnv=$APP_ENV' "$app_dir/.env.schema"
   grep -q "\"name\": \"$expected_name\"" "$app_dir/package.json"
+  grep -q '"jsdom"' "$app_dir/package.json"
 }
 
 echo "Building CLI"
@@ -68,6 +75,7 @@ echo "Running generated app quality gates"
   bun run build
   bun run lint
   bun run typecheck
+  bun run test
 )
 
 echo "Checking generated app dev server"

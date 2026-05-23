@@ -5,14 +5,21 @@ Adds authentication with Better Auth, backed by Prisma as the database adapter. 
 ## First-run Setup
 
 ```bash
-# Set DATABASE_URL, BETTER_AUTH_SECRET, and BETTER_AUTH_URL in .env.schema
-bun run env:check
-bun run auth:generate
+# Set BETTER_AUTH_SECRET and BETTER_AUTH_URL in .env.development (DATABASE_URL
+# already points at the bundled docker-compose Postgres on port 5449).
+bun run db:up
 bun run db:migrate -- --name init
 bun run db:generate
 ```
 
 Generate a real secret: `openssl rand -base64 32`
+
+> **Schema is codegen-owned.** The auth tables in `prisma/schema.prisma`
+> (or `db/schema/auth.ts` with Drizzle) are emitted by `ds-start` from
+> fragments under `cli/src/codegen/`. There is no `auth:generate` script —
+> do not run `@better-auth/cli generate`. To change the auth schema, edit
+> the fragments and re-scaffold (or use a future `ds-start codegen`
+> subcommand).
 
 ### Google OAuth (optional)
 
@@ -65,7 +72,7 @@ The `sendResetPassword` handler in `lib/auth.ts` uses `console.log` by default. 
 
 ## Verification
 
-Scaffold verification covers dependency install, `auth:generate`, Prisma client generation, `build`, `lint`, `typecheck`, and a `/api/auth/ok` smoke check.
+Scaffold verification covers dependency install, Prisma client generation, `build`, `lint`, `typecheck`, and a `/api/auth/ok` smoke check.
 
 ## Next Steps
 
