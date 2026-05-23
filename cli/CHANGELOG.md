@@ -1,5 +1,11 @@
 # ds-start
 
+## 0.4.0
+
+### Minor Changes
+
+- Close the first-run friction gap and ship a dashboard shell. A fresh scaffold now works end-to-end without manual env edits: `bun run db:up && bun run db:migrate` brings up local Postgres on port 5449, and an authed user lands in a real dashboard with sidebar + topbar navigation. Highlights: varlock multi-env (`@currentEnv=$APP_ENV` with committed `.env.{development,staging,production}`), Prisma 7 alignment (varlock-wrapped `db:*` scripts, datasource provider-only), docker-compose for local Postgres, codegen-owned auth schema (no more `auth:generate`), pre-shipped shadcn primitives (sidebar/sheet/tooltip/skeleton/dropdown-menu/avatar/breadcrumb), billing relocated under `/dashboard/billing` with conditional sidebar nav, generic SaaS landing with authed-user redirect, and updated CLAUDE.md docs (env file matrix, varlock-wrap rule, DB-aware gating, codegen-owned schema).
+
 ## 0.3.0
 
 ### Minor Changes
