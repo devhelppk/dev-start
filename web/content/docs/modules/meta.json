@@ -2,6 +2,7 @@
   "title": "Modules",
   "pages": [
     "prisma",
+    "drizzle",
     "auth",
     "clerk",
     "stripe",

@@ -56,7 +56,7 @@ types/                # Generated types (next-ts-api)
 
 ## AI Workflow
 
-This project includes a `CLAUDE.md` with stack conventions, quality gates, and available skills. If the `ds-workflow` module is installed, plans and handoffs live in `.claude/plans/` and `.claude/handoffs/`.
+This project includes a `CLAUDE.md` with stack conventions, quality gates, and available skills.
 
 ## Adding Components
 

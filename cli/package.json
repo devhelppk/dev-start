@@ -6,11 +6,11 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/ShahzaibJak/dev-start.git",
+    "url": "https://github.com/devhelppk/dev-start.git",
     "directory": "cli"
   },
   "homepage": "https://dev-start.shahzaibjak.com",
-  "bugs": "https://github.com/ShahzaibJak/dev-start/issues",
+  "bugs": "https://github.com/devhelppk/dev-start/issues",
   "bin": {
     "ds-start": "dist/index.js",
     "devstart": "dist/index.js",

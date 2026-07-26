@@ -207,7 +207,7 @@ bun run build`}</CodeBlock>
               For the full contributing guide including template changes and adding
               new modules, see{" "}
               <a
-                href="https://github.com/shahzaibjak/dev-start/blob/main/CONTRIBUTING.md"
+                href="https://github.com/devhelppk/dev-start/blob/main/CONTRIBUTING.md"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="font-medium text-foreground underline"

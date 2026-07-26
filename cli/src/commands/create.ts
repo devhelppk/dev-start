@@ -239,9 +239,6 @@ export async function create(opts: CreateOptions) {
 
   if (hasPrisma) {
     nextSteps.push("# Set your DATABASE_URL in .env.schema");
-    if (hasBetterAuth) {
-      nextSteps.push("bun run auth:generate");
-    }
     nextSteps.push("bun run db:migrate -- --name init");
     nextSteps.push("bun run db:generate");
   } else if (hasDrizzle) {
@@ -258,7 +255,7 @@ export async function create(opts: CreateOptions) {
     nextSteps.push("# Stripe billing setup:");
     nextSteps.push("# 1. Set STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, STRIPE_PUBLISHABLE_KEY in .env.schema");
     nextSteps.push("# 2. Replace price_*_placeholder values in lib/auth.ts with real Stripe price IDs");
-    nextSteps.push("# 3. Run `bun run auth:generate` then `bun run db:migrate` to add subscription tables");
+    nextSteps.push("# 3. Run `bun run db:migrate` if you added subscription schema changes");
     nextSteps.push("# 4. Visit /billing to see the billing page");
   } else if (hasStripe && hasClerk) {
     nextSteps.push("");

@@ -16,7 +16,7 @@ export function Footer(): React.ReactNode {
             Docs
           </Link>
           <a
-            href="https://github.com/shahzaibjak/dev-start"
+            href="https://github.com/devhelppk/dev-start"
             target="_blank"
             rel="noopener noreferrer"
             className="hover:text-foreground transition-colors"

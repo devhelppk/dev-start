@@ -10,8 +10,9 @@ All flags are optional. When no module flags are provided, the interactive wizar
 | Flag | Description |
 |------|-------------|
 | `--base` | Scaffold the foundation only, no modules. Cannot be combined with module flags |
-| `--prisma` | Add Prisma 6 ORM with PostgreSQL and typed JSONB |
-| `--auth` | Add Better Auth with email/password, Google OAuth, and route protection. Requires `--prisma` |
+| `--prisma` | Add Prisma 6 ORM with PostgreSQL and typed JSONB. Mutually exclusive with `--drizzle` |
+| `--drizzle` | Add Drizzle ORM with PostgreSQL. Mutually exclusive with `--prisma` |
+| `--auth` | Add Better Auth with email/password, Google OAuth, and route protection. Requires `--prisma` or `--drizzle` |
 | `--clerk` | Add Clerk managed authentication with pre-built components and route protection. No database required |
 | `--stripe` | Add Stripe billing with subscription management, customer portal, and webhooks. Requires `--auth` or `--clerk` |
 | `--email` | Add transactional email with Resend and React Email templates |
@@ -35,6 +36,7 @@ Without either flag, the interactive wizard lets you choose your path.
 
 Some modules have prerequisites:
 
-- `--auth` requires `--prisma` (Better Auth stores sessions in the database)
+- `--prisma` and `--drizzle` are mutually exclusive (one ORM per project)
+- `--auth` requires `--prisma` or `--drizzle` (Better Auth stores sessions in the database)
 - `--stripe` requires `--auth` or `--clerk` (billing needs user identity)
 - `--vercel-deploy` implies `--github-workflows` (CD builds on CI)

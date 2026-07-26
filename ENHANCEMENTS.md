@@ -1,18 +1,23 @@
 # Enhancements
 
-Tracked from [roadmap](web/app/roadmap/page.tsx). Priorities based on user impact and dependency order.
+Tracked from [roadmap](web/app/(marketing)/roadmap/page.tsx). Priorities based on user impact and dependency order.
 
-## Priority (do first)
+## Shipped
 
-- [ ] **Billing & Subscriptions** — Stripe integration with subscription management, usage-based billing, customer portal, and webhook handling. _Why first: monetization is the #1 thing users need from a starter kit._
-- [ ] **Drizzle ORM** — Alternative to Prisma with a more SQL-like approach. Same type-safe integration, different philosophy. _Why first: broadens appeal to a large segment of the TS ecosystem._
-- [x] **Clerk Auth** — Drop-in authentication alternative to Better Auth. Pre-built components, webhooks, and organization support. _Why first: low effort, high value — Clerk handles the hard parts._
+- [x] **Billing & Subscriptions** — Stripe integration with subscription management, customer portal, and webhook handling. Works with both Better Auth and Clerk.
+- [x] **Drizzle ORM** — Alternative to Prisma with a more SQL-like approach. Same type-safe integration, different philosophy.
+- [x] **Clerk Auth** — Drop-in authentication alternative to Better Auth. Pre-built components, webhooks, and organization support.
+- [x] **Email Templates** — React Email + Resend for transactional emails (welcome, password reset, invitations). Type-safe and previewable.
+- [x] **Form Renderer** — JSON-driven forms with classic, conversational, and multistep layouts.
+- [x] **File Uploads** — S3-compatible uploads with presigned URLs.
 
-## Next up
+## Coming soon
+
+- [ ] **Monorepo Templates** — Turborepo-based monorepo starter with shared packages, multiple apps, and coordinated tooling.
+
+## Planned
 
 - [ ] **Organizations & Multi-tenancy** — Team workspaces, role-based access control, and tenant isolation. Built on top of the auth layer with Prisma/Drizzle schema extensions.
-- [ ] **Email Templates** — React Email integration for transactional emails (welcome, password reset, invitations, billing receipts). Type-safe and previewable.
-- [ ] **Monorepo Templates** — Turborepo-based monorepo starter with shared packages, multiple apps, and coordinated tooling.
 
 ## Exploring
 

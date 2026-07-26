@@ -1,7 +1,21 @@
+import { createRequire } from "node:module";
 import { defineCommand } from "citty";
 import { create } from "./commands/create.js";
 import { add } from "./commands/add.js";
 import { resolveInitOptions } from "./prompts/init-wizard.js";
+
+function readCliVersion(): string {
+  const require = createRequire(import.meta.url);
+  const pkg: unknown = require("../package.json");
+  if (typeof pkg !== "object" || pkg === null || !("version" in pkg)) {
+    throw new Error("cli/package.json is missing a version field");
+  }
+  const { version } = pkg;
+  if (typeof version !== "string") {
+    throw new Error("cli/package.json version must be a string");
+  }
+  return version;
+}
 
 const initArgs = {
   dir: {
@@ -108,7 +122,7 @@ const init = defineCommand({
 export const main = defineCommand({
   meta: {
     name: "devstart",
-    version: "0.0.1",
+    version: readCliVersion(),
     description: "Scaffold and extend production-ready Next.js apps",
   },
   subCommands: {

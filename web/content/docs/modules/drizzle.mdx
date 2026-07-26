@@ -1,0 +1,68 @@
+---
+title: Drizzle
+description: Drizzle ORM with PostgreSQL — a TypeScript-first, SQL-like alternative to Prisma.
+---
+
+## Overview
+
+Adds Drizzle ORM with PostgreSQL. Schema lives in TypeScript under `db/schema/`, with a shared client in `lib/db.ts`.
+
+## Prerequisites
+
+None. Mutually exclusive with [Prisma](/docs/modules/prisma) — choose one ORM per project.
+
+## Installation
+
+```bash
+npx ds-start init my-app --drizzle
+```
+
+With Better Auth:
+
+```bash
+npx ds-start init my-app --drizzle --auth
+```
+
+## What It Adds
+
+- `db/schema/` — Database schema files (TypeScript)
+- `db/schema/events.ts` — Starter `events` table
+- `drizzle.config.ts` — Drizzle Kit configuration
+- `lib/db.ts` — Shared Drizzle client instance for server-side usage
+
+## Environment Variables
+
+| Variable | Description |
+|----------|-------------|
+| `DATABASE_URL` | PostgreSQL connection string |
+
+## First-run Setup
+
+```bash
+# Set your DATABASE_URL in .env.schema
+bun run env:check
+bun run db:push
+```
+
+## Usage
+
+### Database client
+
+Import `db` from `@/lib/db` in Server Components, Route Handlers, or Server Actions — never instantiate the Drizzle client directly.
+
+### Adding tables
+
+1. Create a new file in `db/schema/` (e.g., `db/schema/posts.ts`).
+2. Define your table using `pgTable()` from `drizzle-orm/pg-core`.
+3. Re-export from `db/schema/index.ts`.
+4. Run `bun run db:generate` to generate a migration.
+5. Run `bun run db:push` (dev) or `bun run db:migrate` (prod) to apply.
+
+## Scripts
+
+| Script | Description |
+|--------|-------------|
+| `db:generate` | Generate SQL migration from schema changes |
+| `db:migrate` | Run pending migrations |
+| `db:push` | Push schema directly (dev only) |
+| `db:studio` | Open Drizzle Studio (browser-based DB viewer) |

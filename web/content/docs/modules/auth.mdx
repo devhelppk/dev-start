@@ -5,16 +5,18 @@ description: Email/password and Google OAuth authentication with route protectio
 
 ## Overview
 
-Adds Better Auth with email/password login, Google OAuth, route protection, and server-side session validation. Sessions are stored in the database via the Prisma adapter.
+Adds Better Auth with email/password login, Google OAuth, route protection, and server-side session validation. Sessions are stored in the database via the Prisma or Drizzle adapter.
 
 ## Prerequisites
 
-- [Prisma](/docs/modules/prisma) module (Better Auth stores sessions in the database)
+- [Prisma](/docs/modules/prisma) **or** [Drizzle](/docs/modules/drizzle) (Better Auth stores sessions in the database)
 
 ## Installation
 
 ```bash
 npx ds-start init my-app --prisma --auth
+# or
+npx ds-start init my-app --drizzle --auth
 ```
 
 ## What It Adds

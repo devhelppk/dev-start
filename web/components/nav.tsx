@@ -85,7 +85,7 @@ export function Nav(): React.ReactNode {
           <ThemeToggle />
           <Button variant="ghost" size="icon-sm" asChild>
             <a
-              href="https://github.com/shahzaibjak/dev-start"
+              href="https://github.com/devhelppk/dev-start"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="GitHub"

@@ -153,10 +153,10 @@ npx ds-start init my-app --github-workflows
 
 ## Links
 
-- [GitHub](https://github.com/ShahzaibJak/dev-start)
-- [Contributing](https://github.com/ShahzaibJak/dev-start/blob/main/CONTRIBUTING.md)
-- [Issues](https://github.com/ShahzaibJak/dev-start/issues)
+- [GitHub](https://github.com/devhelppk/dev-start)
+- [Contributing](https://github.com/devhelppk/dev-start/blob/main/CONTRIBUTING.md)
+- [Issues](https://github.com/devhelppk/dev-start/issues)
 
 ## License
 
-[MIT](https://github.com/ShahzaibJak/dev-start/blob/main/LICENSE)
+[MIT](https://github.com/devhelppk/dev-start/blob/main/LICENSE)

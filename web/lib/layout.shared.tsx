@@ -7,6 +7,6 @@ export function baseOptions(): BaseLayoutProps {
       title: <Logo variant="lockup" size="sm" />,
       url: "/",
     },
-    githubUrl: "https://github.com/shahzaib-jak/dev-start",
+    githubUrl: "https://github.com/devhelppk/dev-start",
   }
 }

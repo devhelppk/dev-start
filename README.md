@@ -118,11 +118,15 @@ Modules are **complete app blocks** that compose on top of the foundation: UI + 
 
 ### [Prisma](https://www.prisma.io) (`--prisma`)
 
-Prisma 6 ORM with PostgreSQL, PrismaPg adapter, typed JSONB via `prisma-json-types-generator`, and a singleton client.
+Prisma 6 ORM with PostgreSQL, PrismaPg adapter, typed JSONB via `prisma-json-types-generator`, and a singleton client. Mutually exclusive with `--drizzle`.
+
+### [Drizzle](https://orm.drizzle.team) (`--drizzle`)
+
+Drizzle ORM with PostgreSQL — TypeScript-first schema in `db/schema/`, shared client in `lib/db.ts`. Mutually exclusive with `--prisma`.
 
 ### [Better Auth](https://www.better-auth.com) (`--auth`)
 
-Full authentication system. Requires `--prisma`.
+Full authentication system. Requires `--prisma` or `--drizzle`.
 
 - Email/password sign-up and sign-in
 - Google OAuth (optional, via env vars)
@@ -188,7 +192,8 @@ The `add` command detects conflicts, merges where possible (package.json, .gitig
 
 Modules compose freely with a few rules:
 
-- `--auth` requires `--prisma` (auth uses Prisma as its database adapter)
+- `--prisma` and `--drizzle` are mutually exclusive (one ORM per project)
+- `--auth` requires `--prisma` or `--drizzle` (auth uses the selected ORM as its database adapter)
 - `--clerk` cannot be combined with `--auth` (choose one auth provider)
 - `--vercel-deploy` implies `--github-workflows` (CD builds on CI)
 - `--forms` + `--file-uploads` unlocks the `file` field type in the form renderer
@@ -197,8 +202,11 @@ Modules compose freely with a few rules:
 Example combinations:
 
 ```bash
-# Full stack with Better Auth
+# Full stack with Better Auth + Prisma
 npx ds-start init my-app --prisma --auth --github-workflows
+
+# Full stack with Better Auth + Drizzle
+npx ds-start init my-app --drizzle --auth --github-workflows
 
 # Clerk auth (no database needed)
 npx ds-start init my-app --clerk --github-workflows
@@ -223,7 +231,7 @@ npx ds-start init my-app --forms --file-uploads
 ### Setup
 
 ```bash
-git clone https://github.com/shahzaibjak/dev-start.git
+git clone https://github.com/devhelppk/dev-start.git
 cd dev-start
 bun install
 bun run build
@@ -281,8 +289,8 @@ scripts/                      # Verification scripts
 
 Contributions are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
-<a href="https://github.com/shahzaibjak/dev-start/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=shahzaibjak/dev-start" />
+<a href="https://github.com/devhelppk/dev-start/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=devhelppk/dev-start" />
 </a>
 
 ## License

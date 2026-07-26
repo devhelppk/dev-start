@@ -114,7 +114,7 @@ Select the package (`devstart`), choose the semver bump type, and write a summar
 
 ## Reporting Issues
 
-- Use [GitHub Issues](https://github.com/shahzaibjak/dev-start/issues)
+- Use [GitHub Issues](https://github.com/devhelppk/dev-start/issues)
 - Include steps to reproduce, expected vs actual behavior
 - For scaffold bugs, include the command you ran and the error output
 

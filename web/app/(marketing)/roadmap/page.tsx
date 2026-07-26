@@ -216,7 +216,7 @@ export default function RoadmapPage(): React.ReactNode {
               Have a feature request or want to bump something up the list? Open an
               issue on{" "}
               <a
-                href="https://github.com/shahzaibjak/dev-start/issues"
+                href="https://github.com/devhelppk/dev-start/issues"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="font-medium text-foreground underline"
