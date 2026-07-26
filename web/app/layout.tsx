@@ -17,11 +17,11 @@ const siteUrl = "https://dev-start.shahzaibjak.com"
 
 export const metadata: Metadata = {
   title: {
-    default: "ds-start — The composable Next.js app kit",
+    default: "ds-start — Complete functional blocks for Next.js",
     template: "%s | ds-start",
   },
   description:
-    "The composable Next.js app kit. Production-ready foundation with composable modules and agent workflows.",
+    "Complete functional blocks and verified presets for Next.js. Bolt on via init or add. Agent-first APIs so product work starts sooner.",
   metadataBase: new URL(siteUrl),
   keywords: [
     "next.js",
@@ -31,6 +31,8 @@ export const metadata: Metadata = {
     "typescript",
     "ai",
     "agent-ready",
+    "functional blocks",
+    "presets",
     "tailwind",
     "shadcn",
     "prisma",
@@ -51,16 +53,16 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: siteUrl,
     siteName: "ds-start",
-    title: "ds-start — The composable Next.js app kit",
+    title: "ds-start — Complete functional blocks for Next.js",
     description:
-      "Production-ready foundation with composable modules and agent workflows.",
+      "Bolt-on functional blocks and verified presets. Agent-first APIs for Next.js apps.",
     images: [{ url: "/logo.svg", width: 320, height: 64, alt: "ds-start" }],
   },
   twitter: {
     card: "summary",
-    title: "ds-start — The composable Next.js app kit",
+    title: "ds-start — Complete functional blocks for Next.js",
     description:
-      "Production-ready foundation with composable modules and agent workflows.",
+      "Bolt-on functional blocks and verified presets. Agent-first APIs for Next.js apps.",
     images: ["/logo.svg"],
   },
   robots: {

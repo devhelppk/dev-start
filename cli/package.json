@@ -1,7 +1,7 @@
 {
   "name": "ds-start",
   "version": "0.4.0",
-  "description": "The composable Next.js app kit with a production-ready foundation, composable modules, and agent workflows.",
+  "description": "Complete functional blocks for Next.js — bolt on via init or add. Agent-first APIs on a production-ready foundation.",
   "type": "module",
   "license": "MIT",
   "repository": {

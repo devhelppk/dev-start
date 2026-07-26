@@ -3,7 +3,8 @@ import Link from "next/link"
 
 export const metadata: Metadata = {
   title: "About",
-  description: "Why ds-start exists — from starter template to composable app kit.",
+  description:
+    "Why ds-start exists — complete functional blocks and agent-first APIs for Next.js.",
 }
 
 export default function AboutPage(): React.ReactNode {
@@ -21,10 +22,11 @@ export default function AboutPage(): React.ReactNode {
             className="mt-4 max-w-3xl font-semibold tracking-tight text-balance"
             style={{ fontSize: "clamp(1.75rem, 3.5vw, 2.5rem)", lineHeight: 1.1 }}
           >
-            From starter template to composable app kit.
+            Complete blocks. Agent-ready APIs. Product work first.
           </h1>
           <p className="mt-4 max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base">
-            ds-start exists to remove repeated setup so product work can start sooner.
+            ds-start exists so humans and AI agents bolt on finished capabilities —
+            email, forms, jobs, and more — instead of rebuilding plumbing.
           </p>
         </div>
       </section>
@@ -57,9 +59,14 @@ export default function AboutPage(): React.ReactNode {
             </p>
             <p>
               Then the starter grew. People wanted auth, email, payments, forms — but not
-              always at scaffold time. So ds-start became composable: a foundation you
-              start from, plus modules you can install later. Same templates, same
-              conventions, whether you scaffold fresh or add to an existing app.
+              always at scaffold time, and not as raw library dumps. So ds-start became
+              composable: a foundation you start from, plus{" "}
+              <strong className="font-medium text-foreground">functional blocks</strong>{" "}
+              you bolt on later. Same templates, same conventions, whether you scaffold
+              fresh with{" "}
+              <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">init</code>{" "}
+              or extend an existing app with{" "}
+              <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">add</code>.
             </p>
             <p>
               The latest evolution is the interactive wizard. Instead of passing
@@ -142,20 +149,32 @@ export default function AboutPage(): React.ReactNode {
           </h2>
           <div className="mt-6 max-w-3xl space-y-4 text-sm leading-relaxed text-muted-foreground">
             <p>
-              The way we build software is changing. AI coding agents are getting
-              better fast, but they still work best when they have context — conventions
-              to follow, quality gates to enforce, patterns to reuse. Most starters give
-              you files. ds-start gives you a system: a foundation, composable modules,
-              and agent workflows that work together.
+              The edge is not more shadcn modules. It is known-good, agent-ready{" "}
+              <strong className="font-medium text-foreground">functional blocks</strong>{" "}
+              plus verified{" "}
+              <strong className="font-medium text-foreground">presets</strong>, built on
+              libraries like shadcn/ui and Better Auth. Blocks such as forms and email
+              are the reference: complete capability, small stable API,{" "}
+              <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">init</code>{" "}
+              and{" "}
+              <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">add</code>,
+              and a boring verify story. Future blocks — jobs, AI, organizations — must
+              clear the same bar.
             </p>
             <p>
-              The goal is simple: you should be able to go from idea to deployed,
-              production-grade app as fast as possible, with an AI assistant that&apos;s
-              genuinely useful from the first prompt. Not because it&apos;s magic, but
-              because someone already told it how this project works.
+              <strong className="font-medium text-foreground">
+                AI agents first, developers second — same APIs.
+              </strong>{" "}
+              Success means agents spend tokens on user-facing features, not re-deriving
+              auth, email, jobs, or conventions. Most starters give you files. ds-start
+              gives you finished blocks and the workflows to extend them.
             </p>
             <p>
-              See what&apos;s coming next on the{" "}
+              Read the full model in{" "}
+              <Link href="/docs/philosophy" className="font-medium text-foreground underline">
+                Philosophy
+              </Link>
+              . See what&apos;s coming next on the{" "}
               <Link href="/roadmap" className="font-medium text-foreground underline">
                 roadmap
               </Link>

@@ -1,6 +1,6 @@
 # ds-start
 
-The composable Next.js app kit. Start from a production-ready foundation or add composable modules to an existing app.
+Complete functional blocks for Next.js. Start from a production-ready foundation, or bolt blocks onto an existing app with `add`.
 
 ## Quick Start
 
@@ -41,13 +41,13 @@ npx ds-start init my-app --base
 
 ## Why ds-start?
 
-ds-start gives you a production-ready foundation, composable modules, and agent workflows that share the same project conventions. AI coding agents are most useful when they can work on product features — ds-start handles the repeatable setup so Claude, Codex, and other agents can build real features sooner.
+ds-start ships **complete functional blocks** (not raw components) plus verified **presets** on a production-ready foundation. Blocks compose shadcn/ui, Better Auth, and similar libraries into end-to-end capabilities with small APIs — **agent-first, developer-friendly**. See [`PHILOSOPHY.md`](../PHILOSOPHY.md).
 
 **Production-ready foundation** — Not a toy starter. You get strict TypeScript, oxlint + oxfmt, Husky pre-commit hooks running lint + format + typecheck, and GitHub Actions CI — all wired up and working from the first commit.
 
 **End-to-end type safety** — Types flow from your database schema through server actions to client components. [Prisma](https://www.prisma.io) generates types from your DB, [next-ts-api](https://github.com/zahinafsar/next-ts-api) ensures your API routes and clients share the same contract, and [varlock](https://varlock.dev) validates environment variables at build time. No `any`, no runtime surprises.
 
-**Composable modules** — Auth, email, payments, forms, file uploads, and more. Add them at scaffold time or bolt them onto an existing app later. Same templates, same conventions, same result.
+**Functional blocks** — Email, forms, auth, payments, uploads, and more. Each block is a complete capability you can scaffold with `init` or bolt on with `add`. Same templates, same conventions, same result.
 
 **Agent-ready workflows** — Every project ships with structured workflows for coding agents. A development cycle — `/start-prd` to plan, `/start-work` to build, `/handoff` to preserve context, `/start-review` to verify, `/start-pr` to ship — so your coding agent understands project conventions from the first prompt.
 

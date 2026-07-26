@@ -1,13 +1,15 @@
 ---
 title: Documentation
-description: Everything you need to know about ds-start — the composable Next.js app kit.
+description: Everything you need to know about ds-start — complete functional blocks for Next.js, agent-first.
 ---
 
 ## What is ds-start?
 
-ds-start is the composable Next.js app kit. It scaffolds a production-ready foundation and lets you add only the modules you need — authentication, payments, email, file uploads, forms, CI, deploys, and more.
+ds-start is the composable Next.js app kit. It scaffolds a production-ready foundation and lets you bolt on **complete functional blocks** — email, forms, auth, billing, uploads, CI, deploys, and more — via `init` or `add`.
 
-Agent workflows ship with the project so Claude, Codex, and other coding agents get conventions, quality gates, and handoff patterns from the start.
+These are not raw component dumps. Each block composes libraries like shadcn/ui and Better Auth into end-to-end functionality with a small, stable API. **AI agents first, developers second — same surfaces** — so work starts on product features instead of rebuilding plumbing.
+
+Read the [Philosophy](/docs/philosophy) before contributing modules or presets. That document is the north star for future product work.
 
 ## Quick Start
 
@@ -17,7 +19,7 @@ npx ds-start init my-app
 
 The interactive wizard guides you through three build paths — recommended production starter, app with auth, or base app — and lets you customize modules before scaffolding. Use `--base` for a minimal foundation or `-y` for the recommended preset without prompts.
 
-To add a module to an existing project:
+To add a block to an existing project:
 
 ```bash
 npx ds-start add email
@@ -30,13 +32,14 @@ Every ds-start project includes:
 - **Next.js 16** — App Router, React Server Components, Turbopack
 - **TypeScript** — Strict mode, zero `any` tolerance
 - **Tailwind CSS 4** — Utility-first styling
-- **shadcn/ui** — Accessible component primitives
+- **shadcn/ui** — Accessible component primitives (dependencies for blocks, not the product itself)
 - **Bun** — Fast package management and scripts
 - **oxlint + oxfmt** — Fast, consistent code quality
 
 ## Next Steps
 
+- [Philosophy](/docs/philosophy) — Core product model and decision test
 - [Installation](/docs/getting-started/installation) — Install ds-start globally or use npx
 - [Quick Start](/docs/getting-started/quick-start) — Scaffold your first project
 - [CLI Reference](/docs/cli) — All commands and flags
-- [Modules](/docs/modules) — Browse available modules
+- [Modules](/docs/modules) — Browse available blocks

@@ -1,5 +1,9 @@
 # Project Instructions
 
+## How this project was scaffolded
+
+This app was created with **ds-start**. Prefer extending installed **functional blocks** (email, forms, auth, …) through their small public APIs instead of reinventing the same plumbing. Blocks compose libraries like shadcn/ui and Better Auth into complete capabilities — use those surfaces so product features ship faster.
+
 ## Stack
 - Next.js App Router
 - React 19

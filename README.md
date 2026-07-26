@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  The composable Next.js app kit. Production-ready foundation with composable modules and agent workflows.
+  Complete functional blocks for Next.js — bolt on via init or add. Agent-first APIs so product work starts sooner.
 </p>
 
 <p align="center">
@@ -65,7 +65,9 @@ npx ds-start init my-app --base
 
 ## Why ds-start
 
-ds-start gives you a **production-ready foundation**, **composable modules**, and **agent workflows** that share the same project conventions. AI coding agents are most useful when they can work on product features — ds-start handles the repeatable setup so Claude, Codex, and other agents can build real features sooner.
+ds-start ships **complete functional blocks** — not raw components — plus verified **presets**, on a production-ready Next.js foundation. Blocks compose libraries like shadcn/ui and Better Auth into end-to-end capabilities with small, stable APIs. **AI agents first, developers second — same surfaces** — so Claude, Codex, and humans build product features instead of re-deriving email, forms, jobs, auth glue, or conventions.
+
+Canonical philosophy: [`PHILOSOPHY.md`](./PHILOSOPHY.md) · Docs: [Philosophy](https://dev-start.shahzaibjak.com/docs/philosophy)
 
 ## What You Get
 
@@ -110,9 +112,9 @@ Every project ships with built-in skills that guide your AI coding assistant thr
 
 Plus domain skills: `/next-ts-api` for type-safe APIs, `/vercel-react-best-practices` for React performance (64 rules), and `/frontend-design` for production-grade UI.
 
-## Modules
+## Modules (functional blocks)
 
-Modules are pre-integrated app features that compose on top of the base foundation. They follow the same conventions as the scaffolded app, so your agent can extend known code instead of inventing integrations from scratch.
+Modules are **complete app blocks** that compose on top of the foundation: UI + server + env/schema + conventions. They follow the same project patterns so agents extend known code instead of inventing integrations. Reference pattern: **forms** and **email**. New blocks must meet the bar in [`PHILOSOPHY.md`](./PHILOSOPHY.md).
 
 ### [Prisma](https://www.prisma.io) (`--prisma`)
 

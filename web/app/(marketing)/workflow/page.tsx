@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 export const metadata: Metadata = {
   title: "Agentic Workflow",
   description:
-    "Built-in skills that give AI assistants project conventions, quality gates, plans, reviews, and handoffs.",
+    "Agent workflows on top of functional blocks — plans, quality gates, reviews, and handoffs so agents ship product features.",
 }
 
 const steps = [
@@ -91,11 +91,16 @@ export default function WorkflowPage(): React.ReactNode {
             className="mt-4 max-w-3xl font-semibold tracking-tight text-balance"
             style={{ fontSize: "clamp(1.75rem, 3.5vw, 2.5rem)", lineHeight: 1.1 }}
           >
-            Give agents the project context they need.
+            Give agents finished blocks and the workflow to extend them.
           </h1>
           <p className="mt-4 max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base">
-            Skills provide plans, quality gates, reviews, and handoffs inside the
-            repo so AI coding agents can follow the way the project works.
+            Skills provide plans, quality gates, reviews, and handoffs on top of
+            complete functional blocks — so agents build product features, not
+            plumbing. See{" "}
+            <Link href="/docs/philosophy" className="font-medium text-foreground underline">
+              Philosophy
+            </Link>
+            .
           </p>
         </div>
       </section>

@@ -50,17 +50,17 @@ const faqs = [
   {
     question: "What is ds-start?",
     answer:
-      "The composable Next.js app kit: a production-ready foundation, composable modules, and agent workflows.",
+      "A Next.js kit of complete functional blocks and verified presets — foundation plus bolt-on capabilities (email, forms, auth, and more) with agent-first APIs.",
   },
   {
     question: "Why not just ask Claude or Codex?",
     answer:
-      "You should. ds-start gives them a better starting point so they can work on product features instead of recreating auth, email, forms, uploads, CI, deploys, and project conventions.",
+      "You should. ds-start gives them finished blocks and conventions so they build product features instead of recreating email, forms, jobs, auth glue, uploads, CI, and project setup.",
   },
   {
     question: "What are modules?",
     answer:
-      "Modules are pre-integrated app features that compose with the foundation and follow the same conventions as the rest of the project.",
+      "Modules are functional blocks: end-to-end capabilities built on libraries like shadcn/ui and Better Auth — not raw component dumps. They work via init or add. See /docs/philosophy.",
   },
 ] satisfies ReadonlyArray<{ question: string; answer: string }>
 
@@ -76,17 +76,17 @@ export default function HomePage(): React.ReactNode {
           {/* Left column */}
           <div className="flex min-w-0 flex-col items-start text-left">
             <p className="font-mono text-xs tracking-widest text-muted-foreground uppercase">
-              composable &middot; production-ready &middot; agent workflows
+              functional blocks &middot; verified presets &middot; agent-first
             </p>
             <h1
               className="mt-5 font-semibold tracking-tight text-balance"
               style={{ fontSize: "clamp(2.25rem, 4.5vw, 4rem)", lineHeight: 1 }}
             >
-              The composable Next.js app kit.
+              Complete blocks for Next.js apps.
             </h1>
             <p className="mt-5 max-w-md text-base leading-relaxed text-muted-foreground sm:text-lg lg:max-w-lg">
-              Start with the foundation every app needs, so your AI agent can
-              build what makes yours different.
+              Bolt on finished capabilities — email, forms, and more — so your
+              AI agent builds product features instead of plumbing.
             </p>
 
             <div className="mt-7 flex flex-wrap gap-3">
@@ -205,10 +205,15 @@ export default function HomePage(): React.ReactNode {
                 Features
               </p>
               <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">
-                The app baseline AI agents should not have to rebuild.
+                Functional blocks agents should not have to rebuild.
               </h2>
               <p className="mt-3 text-sm leading-relaxed text-muted-foreground sm:text-base">
-                Give your agent a real starting point, not a blank slate.
+                Finished capabilities with small APIs — not a blank slate or a
+                raw component dump.{" "}
+                <Link href="/docs/philosophy" className="font-medium text-foreground underline">
+                  Philosophy
+                </Link>
+                .
               </p>
             </div>
             <Button asChild variant="outline">

@@ -1,29 +1,62 @@
 # Claude Code Instructions
 
+## Product philosophy (read first)
+
+**Canonical:** [`PHILOSOPHY.md`](./PHILOSOPHY.md) · Docs: `/docs/philosophy`
+
+ds-start ships **complete functional blocks** (not raw components) plus verified **presets**, built on libraries like shadcn/ui and Better Auth. Blocks bolt on via `init` or `add`. Agents and humans should spend effort on product features, not re-deriving email, forms, jobs, auth glue, or conventions.
+
+Before adding or changing a module, apply the decision test in `PHILOSOPHY.md`. Reference pattern: `forms` and `email`. Future blocks (`jobs`, `ai`, `organizations`, …) must meet the same bar.
+
 ## Project Overview
-Bun monorepo containing `devstart`. The repo is in template-rebuild mode: the CLI/package structure stays in place while shipped app templates are removed and rebuilt from real baselines.
+
+Bun monorepo for **ds-start** (`cli/` publishes the npm package; `web/` is the marketing + docs site).
+
+- CLI: scaffold with `ds-start init`, bolt blocks onto existing apps with `ds-start add`
+- Templates live under `cli/templates/nextjs/{base,extras}/`
+- Marketing/docs site: `web/` (Fumadocs + Next.js)
 
 ## Project Structure
+
 ```
-cli/                          # devstart package (workspace)
+cli/                          # ds-start package (workspace)
   src/
     cli.ts                    # Main command definition (citty)
-    index.ts                  # Entry point
-    commands/create.ts        # Current scaffold gate / rebuild-state behavior
+    commands/                 # init, add, create
     helpers/                  # git, install, package-json, scaffold utilities
-    installers/               # Extensible installer pattern (index barrel + versions)
-  templates/                  # Rebuild markers for future template families
-  dist/                       # Build output (tsup)
+    codegen/                  # Typed fragment composition (auth, schema, …)
+    modules.ts                # Module registry
+  templates/nextjs/
+    base/                     # Foundation template
+    extras/                   # Functional blocks (email, forms, …)
+web/                          # Marketing site + docs
+PHILOSOPHY.md                 # Core product philosophy (source of truth)
 ```
 
 ## Code Location Rules
+
 - CLI commands go in `cli/src/commands/`
 - Shared utilities go in `cli/src/helpers/`
-- New installers go in `cli/src/installers/` and register in `installers/index.ts`
-- Reintroduced template files go in `cli/templates/{template}/base/` or `extras/`
+- Codegen fragments go in `cli/src/codegen/`
+- New blocks go in `cli/templates/nextjs/extras/{block}/` and register in `modules.ts`
 - Dotfiles in templates use underscore prefix (`_gitignore`, `_env.schema`) — npm strips dotfiles on publish
+- Docs for blocks: `web/content/docs/modules/`
+- Philosophy for humans/agents: `PHILOSOPHY.md` and `web/content/docs/philosophy.mdx`
+
+## Block authoring rules
+
+When creating or extending an extra/module:
+
+1. Ship **end-to-end functionality**, not a thin library wrapper
+2. Expose a **small, stable API** agents can call
+3. Follow kit conventions (types, env schema, folder layout, skills)
+4. Support both **`init` and `add`**
+5. Include a **verify path** that proves build/boot with the block enabled
+
+Prefer improving completeness of existing blocks over adding unverified surface area.
 
 ## Quality Gates
+
 ```bash
 # Run before commits:
 bun run lint        # oxlint
@@ -32,6 +65,7 @@ bun run build       # tsup
 ```
 
 ## Type Safety Rules (enforced)
+
 - NEVER use `any` type — use `unknown` + type guards, or define proper types
 - NEVER use type assertions (`as Type`) — use type narrowing, discriminated unions, or `satisfies`
 - NEVER add `@ts-ignore`, `@ts-expect-error`, `@ts-nocheck` comments
@@ -42,15 +76,16 @@ bun run build       # tsup
 - Escape hatch: append `// type-ok` to a line ONLY when absolutely unavoidable (third-party API mismatch, etc.)
 
 ## Web UI Patterns
+
 See `web/design.md` for the marketing site design system — section structure, background layers, card styles, typography rules, and spacing. Follow these patterns for all UI work in `web/app/(marketing)/`.
 
 ## Conventions
+
 - **File naming:** kebab-case for all files and directories
 - **Imports:** Relative imports with `.js` extensions (ESM). No path aliases in CLI source.
 - **Exports:** Named exports for helpers/utilities. No default exports except entry points.
 - **Functions:** Named function declarations for exported functions. Async/await throughout.
 - **CLI framework:** citty for command definitions, consola for logging/prompts
-- **Template policy:** Do not hand-wave template files into place. Rebuild from a real app baseline, then layer project-specific changes intentionally.
 - **Error handling:** Throw errors, let them propagate. Defensive checks with early returns.
 - **Commit style:** Conventional commits via commitlint + commitizen (cz-git)
 - **Versioning:** Changesets

@@ -5,7 +5,8 @@ import { toolLogos } from "@/lib/tool-logos"
 
 export const metadata: Metadata = {
   title: "Features",
-  description: "Foundation, modules, and agent workflows — everything in the ds-start app kit.",
+  description:
+    "Foundation, functional blocks, and agent-first APIs — everything in the ds-start kit.",
 }
 
 const baseStack = [
@@ -207,12 +208,18 @@ export default function FeaturesPage(): React.ReactNode {
             className="mt-4 max-w-3xl font-semibold tracking-tight text-balance"
             style={{ fontSize: "clamp(1.75rem, 3.5vw, 2.5rem)", lineHeight: 1.1 }}
           >
-            Foundation, modules, and agent workflows.
+            Foundation, functional blocks, agent-first APIs.
           </h1>
           <p className="mt-4 max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base">
-            ds-start gives AI coding agents a production-ready baseline and
-            composable app capabilities so they can extend real product features
-            sooner.
+            Complete capabilities you bolt on with{" "}
+            <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">init</code>{" "}
+            or{" "}
+            <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">add</code>
+            — so agents and humans build product features, not plumbing. See{" "}
+            <Link href="/docs/philosophy" className="font-medium text-foreground underline">
+              Philosophy
+            </Link>
+            .
           </p>
         </div>
       </section>

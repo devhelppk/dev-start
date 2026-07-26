@@ -1,9 +1,11 @@
 ---
 title: Modules
-description: Browse all available ds-start modules — composable building blocks for your Next.js app.
+description: Browse ds-start modules — complete functional blocks you can bolt onto any Next.js app.
 ---
 
-Modules are pre-integrated app features that compose with the ds-start foundation. Each module brings its own files, dependencies, and environment variables while following the same project conventions.
+Modules in ds-start are **functional blocks**: end-to-end capabilities (UI + server + env/schema + conventions) that compose with the foundation. They build on libraries like shadcn/ui and Better Auth — they are not raw component packs.
+
+See [Philosophy](/docs/philosophy) for the block bar, preset model, and what “done” means for new modules. Reference pattern: [forms](/docs/modules/forms) and [email](/docs/modules/email).
 
 ## Available Modules
 
@@ -44,4 +46,7 @@ Use `--base` to scaffold the foundation without any modules, then add them later
 
 ```bash
 npx ds-start add email
+npx ds-start add forms
 ```
+
+Presets are curated, verified combinations of blocks. Prefer presets when you want a known-good starting set; use `add` when composing onto an existing app.

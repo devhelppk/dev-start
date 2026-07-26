@@ -1,6 +1,8 @@
-# Contributing to devstart
+# Contributing to ds-start
 
 Thanks for your interest in contributing! This guide will help you get started.
+
+**Read [`PHILOSOPHY.md`](./PHILOSOPHY.md) first.** New modules must be complete functional blocks (not raw component wrappers), support `init` and `add`, expose a small stable API, and include a verify path. Forms and email are the reference pattern.
 
 ## Development Setup
 

@@ -1,0 +1,61 @@
+# ds-start philosophy
+
+This is the core product philosophy. Future work on ds-start should advance this model — not dilute it into another component dump or flag soup.
+
+## One-line edge
+
+Known-good, agent-ready **functional blocks** plus verified **presets**, built on libraries like shadcn/ui and Better Auth, so Next.js apps start complete and stay composable.
+
+## What we ship
+
+ds-start ships **complete app blocks** — not raw components.
+
+A block is a known-good slice of product infrastructure (UI + server + schema/env + agent docs) that bolts onto any Next.js app via `init` or `add`. Humans and AI agents start past the rebuild tax and go straight to product features.
+
+Libraries such as shadcn/ui, Better Auth, Drizzle, Prisma, Resend, and Stripe remain dependencies. **ds-start’s product is the composed block and the simple API around it.**
+
+Reference pattern today: **forms** and **email**. Future blocks such as **jobs**, **ai**, and **organizations** must meet the same bar.
+
+## What a block must include
+
+A block is shippable only when it includes:
+
+1. **End-to-end functionality** — a complete capability, not a primitive dump
+2. **Stable, small surface** — few entrypoints agents can call without inventing glue
+3. **Shared kit conventions** — types, env schema, folder layout, and skills
+4. **Bolt-on path** — works on greenfield (`init`) and existing apps (`add`)
+5. **Verify story** — at least one integration proof that the scaffolded app builds and boots with that block
+
+If something only wraps a library with a thin adapter and a TODO, it is not a ds-start block yet.
+
+## Blocks and presets
+
+- **Blocks** are the composable units (`email`, `forms`, `jobs`, `ai`, `organizations`, …)
+- **Presets** are curated sets of blocks that are already verified together (`ai-saas`, `b2b`, `base`, …)
+
+Agents prefer presets for speed. Humans and `add` prefer blocks for composition. Presets without complete blocks are flag soup. Blocks without presets force every agent to rediscover good combinations.
+
+## Who it is for
+
+**AI agents first, developers second — same APIs.**
+
+Success looks like agents spending tokens on user-facing product features, not re-deriving auth, email, jobs, AI plumbing, or project conventions. Developer experience is smaller, documented, typed surfaces — not more knobs.
+
+## Non-goals
+
+- Shipping more shadcn primitives without composed functionality
+- Growing an unverified combinatorial flag matrix
+- Replacing underlying libraries; we compose them
+- Hand-waving “integration” without env schema, examples, and verify coverage
+
+## Decision test for future work
+
+Before adding or changing a module, ask:
+
+1. Does this make a **complete functional block**, or only expose raw library pieces?
+2. Can an agent use a **small, stable API** to build product features on top?
+3. Does it work via both **`init` and `add`**?
+4. Is there a **boring verify path** proving the block actually works?
+5. If it belongs in a preset, is that preset a **known-good combination**?
+
+If the answer is no, keep working until it is yes — or do not ship it as a ds-start block.
